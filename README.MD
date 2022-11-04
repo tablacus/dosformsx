@@ -30,4 +30,4 @@ ASCAT編集部「MSXテクニカルガイドブック　第四版＋ディスク
 
 # ライセンス
 
-MIT LICENSE
+[MIT LICENSE](https://github.com/tablacus/dosformsx/blob/main/LICENSE)
