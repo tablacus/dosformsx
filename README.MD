@@ -1,4 +1,4 @@
-# 似非DOS for MSX Gaku
+# 似非DOS for MSX
 
 # 機能概略
 
