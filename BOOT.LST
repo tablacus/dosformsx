@@ -1,0 +1,40 @@
+                                ;*** AILZ80ASM *** Z-80 Assembler, version 1.0.0.0, LST:Full:4
+                                ;   似非DOS BOOT
+                                
+       F37D                         BDOS    EQU 0F37DH
+                                
+000000 C000                         ORG 0C000H
+                                ;
+                                ;   BPB
+                                ;
+000000 C000 EBFE90444F532020        DB  0EBH,0FEH,90H,"DOS  "
+000008 C008 2020200002020100        DB  "   ",00H,02H,02H,01H,00H
+000010 C010 027000A005F90300        DB  02H,70H,00H,0A0H,05H,0F9H,03H,00H
+000018 C018 090002000000            DB  09H,00H,02H,00H,00H,00H
+                                
+00001E C01E D0              11      RET NC
+                                
+00001F C01F 114AC0          10      LD  DE,FCB
+000022 C022 0E0F             7      LD  C,00FH
+000024 C024 CD7DF3          17      CALL    BDOS
+                                
+000027 C027 110001          10      LD  DE,00100H
+00002A C02A 0E1A             7      LD  C,01AH      ;(BDOS)DTAの設定
+00002C C02C CD7DF3          17      CALL    BDOS
+                                
+00002F C02F 210000          10      LD  HL,0
+000032 C032 226BC0          16      LD  (FCB+33),HL
+000035 C035 226DC0          16      LD  (FCB+35),HL
+000038 C038 2C               4      INC L
+000039 C039 2258C0          16      LD  (FCB+14),HL
+                                
+00003C C03C 114AC0          10      LD  DE,FCB
+00003F C03F 2100BF          10      LD  HL,0BF00H
+000042 C042 0E27             7      LD  C,027H      ;(BDOS)ランダム・ブロック・リード
+000044 C044 CD7DF3          17      CALL    BDOS
+                                
+000047 C047 C30001          10      JP  0100H
+                                
+00004A C04A 00444F5320202020    FCB:    DB  0, "DOS     SYS",0,0,0,0
+            2053595300000000    
+[EOF:BOOT.ASM:SHIFT_JIS]

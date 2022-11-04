@@ -1,0 +1,271 @@
+﻿                                ;*** AILZ80ASM *** Z-80 Assembler, version 1.0.0.0, LST:Full:4
+                                ;   似非DOS
+                                
+       0005                     SYSTEM  EQU 00005H
+       001C                     CALSLT  EQU 0001CH
+       0024                     ENASLT  EQU 00024H  
+       005F                     CHGMOD  EQU 0005FH
+       006C                     INITXT  EQU 0006CH
+       0078                     SETTXT  EQU 00078H
+       005C                     FCB1    EQU 0005CH
+       0080                     DTA1    EQU 00080H
+       F307                     FCB11   EQU 0F307H
+       F37D                     BDOS    EQU 0F37DH
+       F3AE                     LINL40  EQU 0F3AEH
+       F672                     MEMSIZ  EQU 0F672H
+       FCC1                     EXPTBL  EQU 0FCC1H
+       FFCA                     EXTBIOS EQU 0FFCAH
+       0402                     MAPPER  EQU 00402H
+                                
+000000 0100                         ORG 0100H
+000000 0100 CD6BF3          17      CALL    0F36BH      ;ページ1をメインRAMに切り替える
+000003 0103 3EC3             7      LD  A,0C3H      ;JP
+000005 0105 320000          13      LD  (0),A
+000008 0108 320500          13      LD  (SYSTEM),A
+                                
+00000B 010B ED5B72F6        20      LD  DE,(MEMSIZ)
+00000F 010F 1E03             7      LD  E,3
+000011 0111 15               4      DEC D
+000012 0112 ED530100        20      LD  (1),DE
+000016 0116 15               4      DEC D
+000017 0117 7A               4      LD  A,D
+000018 0118 321D01          13      LD  (SPPAT+2),A
+00001B 011B 310400          10  SPPAT:  LD  SP,4
+00001E 011E 7A               4      LD  A,D
+00001F 011F 1E04             7      LD  E,4
+000021 0121 21C101          10      LD  HL,REAL
+000024 0124 012501          10      LD  BC,MAIN_END-MAIN
+000027 0127 EDB0                    LDIR
+                                                ;リロケータブル
+000029 0129 67               4      LD  H,A
+00002A 012A 2E08             7      LD  L,BDOS0+2
+00002C 012C 77               7      LD  (HL),A
+00002D 012D 2E89             7      LD  L,SAVEFCB1+2
+00002F 012F 77               7      LD  (HL),A
+000030 0130 2E98             7      LD  L,ALTFCB0+2
+000032 0132 77               7      LD  (HL),A
+000033 0133 2EBB             7      LD  L,ALTFCB1+2
+000035 0135 77               7      LD  (HL),A
+000036 0136 2E92             7      LD  L,_SAVE_DE+3
+000038 0138 77               7      LD  (HL),A
+000039 0139 2EA3             7      LD  L,SAVE_SP+3
+00003B 013B 77               7      LD  (HL),A
+00003C 013C 24               4      INC H
+00003D 013D 2E02             7      LD  L,2
+00003F 013F 77               7      LD  (HL),A
+000040 0140 2E05             7      LD  L,WBOOT+2-BOOT
+000042 0142 77               7      LD  (HL),A
+000043 0143 2E08             7      LD  L,CONST_+2-BOOT
+000045 0145 77               7      LD  (HL),A
+000046 0146 2E0B             7      LD  L,CONIN+2-BOOT
+000048 0148 77               7      LD  (HL),A
+000049 0149 2E0E             7      LD  L,CONOUT+2-BOOT
+00004B 014B 77               7      LD  (HL),A
+00004C 014C 25               4      DEC H
+00004D 014D 3C               4      INC A
+00004E 014E 2E11             7      LD  L,FCBPAT+2-BOOT
+000050 0150 77               7      LD  (HL),A
+000051 0151 2E50             7      LD  L,SHOW_ERROR+2
+000053 0153 77               7      LD  (HL),A
+000054 0154 3C               4      INC A
+000055 0155 2EA6             7      LD  L,EXTSP+1
+000057 0157 77               7      LD  (HL),A
+000058 0158 D602             7      SUB 2
+00005A 015A 2E06             7      LD  L,BDOS0
+00005C 015C 220600          16      LD  (SYSTEM+1),HL
+00005F 015F E5              11      PUSH    HL
+000060 0160 0E19             7      LD  C,19H       ;(BDOS)カレント・ドライブ番号の獲得
+000062 0162 CD7DF3          17      CALL    BDOS
+000065 0165 3C               4      INC A
+000066 0166 E1              10      POP HL
+000067 0167 24               4      INC H
+000068 0168 2E0F             7      LD  L,FCBCMD-BOOT
+00006A 016A 77               7      LD  (HL),A
+                                
+00006B 016B 3E28             7      LD  A,40
+00006D 016D 32AEF3          13      LD  (LINL40),A
+000070 0170 FD2AC1FC        20      LD  IY,(EXPTBL) ;メインROMスロット
+000074 0174 DD216C00        14      LD  IX,INITXT
+000078 0178 CD1C00          17      CALL    CALSLT
+00007B 017B FD2AC1FC        20      LD  IY,(EXPTBL) ;メインROMスロット
+00007F 017F DD217800        14      LD  IX,SETTXT
+000083 0183 CD1C00          17      CALL    CALSLT
+                                
+000086 0186 11A101          10      LD  DE,TITLE
+000089 0189 0E09             7      LD  C,9
+00008B 018B CD7DF3          17      CALL    BDOS
+00008E 018E 010900          10      LD  BC,9
+000091 0191 21B801          10      LD  HL,AUTOEXEC
+000094 0194 118100          10      LD  DE,00081H
+000097 0197 EDB0                    LDIR
+000099 0199 3E09             7      LD  A,9
+00009B 019B 2A0600          16      LD  HL,(SYSTEM+1)
+00009E 019E 2E0E             7      LD  L,CBOOT & $FF
+       01A0                     JP_HL:
+0000A0 01A0 E9               4      JP  (HL)
+       01A1                     TITLE:
+0000A1 01A1 444F5320666F7220        DB  "DOS for MSX v0.01 Gaku$"
+            4D53582076302E30    
+            312047616B7524      
+       01B8                     AUTOEXEC:
+0000B8 01B8 4155544F45584543        DB  "AUTOEXEC",0
+            00                  
+       01C1                     REAL:
+0000C1 0004                         ORG 4,REAL-0100H
+       0004                     MAIN:
+0000C1 0004 0000                    DW  0
+       0006                     BDOS0:
+0000C3 0006 C30900          10      JP  BDOS1
+       0009                     BDOS1:
+0000C6 0009 79               4      LD  A,C
+0000C7 000A B7               4      OR  A
+0000C8 000B 2051            12      JR  NZ,BDOS2
+       000D                     WBOOT1:
+0000CA 000D AF               4      XOR A
+       000E                     CBOOT:
+0000CB 000E F5              11      PUSH    AF
+0000CC 000F 210F01          10  FCBPAT: LD  HL,FCBCMD
+0000CF 0012 115C00          10      LD  DE,FCB1
+0000D2 0015 011000          10      LD  BC,16
+0000D5 0018 EDB0                    LDIR
+                                
+0000D7 001A 115C00          10      LD  DE,FCB1
+0000DA 001D 0E0F             7      LD  C,00FH
+0000DC 001F CD7DF3          17      CALL    BDOS
+0000DF 0022 B7               4      OR  A
+0000E0 0023 2029            12      JR  NZ,SHOW_ERROR
+0000E2 0025 210000          10      LD  HL,0
+0000E5 0028 227D00          16      LD  (FCB1+33),HL
+0000E8 002B 227F00          16      LD  (FCB1+35),HL
+0000EB 002E 2C               4      INC L
+0000EC 002F 226A00          16      LD  (FCB1+14),HL
+                                
+0000EF 0032 110001          10      LD  DE,00100H
+0000F2 0035 0E1A             7      LD  C,01AH      ;(BDOS)DTAの設定
+0000F4 0037 CD7DF3          17      CALL    BDOS
+                                
+0000F7 003A 115C00          10      LD  DE,FCB1
+0000FA 003D 2100BF          10      LD  HL,0BF00H
+0000FD 0040 0E27             7      LD  C,027H      ;(BDOS)ランダム・ブロック・リード
+0000FF 0042 CD7DF3          17      CALL    BDOS
+000102 0045 F1              10      POP AF
+000103 0046 328000          13      LD  (DTA1),A
+000106 0049 7C               4      LD  A,H
+000107 004A B5               4      OR  L
+                                
+000108 004B C20001          10      JP  NZ,0100H
+       004E                     SHOW_ERROR:
+00010B 004E 111F01          10      LD  DE,ERROR
+00010E 0051 0E09             7      LD  C,9
+000110 0053 CD7DF3          17      CALL    BDOS
+000113 0056 0E08             7      LD  C,8
+000115 0058 CD7DF3          17      CALL    BDOS
+000118 005B AF               4      XOR A
+000119 005C 18B0            12      JR  CBOOT
+       005E                     BDOS2:
+00011B 005E 79               4      LD  A,C
+00011C 005F FE0F             7      CP  00FH
+00011E 0061 3823            12      JR  C,SAVEFCB0
+000120 0063 FE12             7      CP  012H
+000122 0065 2004            12      JR  NZ,NOBD12
+000124 0067 ED5B07F3        20      LD  DE,(FCB11)
+       006B                     NOBD12:
+000128 006B FE18             7      CP  018H
+00012A 006D 380A            12      JR  C,SAVEFCB36
+00012C 006F FE21             7      CP  021H
+00012E 0071 3813            12      JR  C,SAVEFCB0
+000130 0073 FE29             7      CP  029H
+000132 0075 3802            12      JR  C,SAVEFCB36
+000134 0077 180D            12      JR  SAVEFCB0
+       0079                     SAVEFCB36:
+000136 0079 7A               4      LD  A,D
+000137 007A FE3F             7      CP  03FH
+000139 007C 3808            12      JR  C,SAVEFCB0
+00013B 007E FE80             7      CP  080H
+00013D 0080 3004            12      JR  NC,SAVEFCB0
+00013F 0082 3E24             7      LD  A,36
+000141 0084 1801            12      JR  SAVEFCB1
+       0086                     SAVEFCB0:
+000143 0086 AF               4      XOR A
+       0087                     SAVEFCB1:
+000144 0087 32AF00          13      LD  (SAVEFCB),A
+000147 008A B7               4      OR  A
+000148 008B 2813            12      JR  Z,BDOS3
+00014A 008D C5              11      PUSH    BC
+00014B 008E E5              11      PUSH    HL
+       008F                     _SAVE_DE:
+00014C 008F ED53BD00        20      LD  (SAVE_DE),DE
+000150 0093 4F               4      LD  C,A
+000151 0094 0600             7      LD  B,0
+       0096                     ALTFCB0:
+000153 0096 21D600          10      LD  HL,ALTFCB
+000156 0099 EB               4      EX  DE,HL
+000157 009A D5              11      PUSH    DE
+000158 009B EDB0                    LDIR
+00015A 009D D1              10      POP DE
+00015B 009E E1              10      POP HL
+00015C 009F C1              10      POP BC
+       00A0                     BDOS3:
+       00A0                     SAVE_SP:
+00015D 00A0 ED73AB00        20      LD  (BDSP),SP
+       00A5                     EXTSP   EQU $+1
+000161 00A4 310000          10      LD  SP,0
+000164 00A7 CD7DF3          17      CALL    BDOS
+       00AB                     BDSP    EQU $+1
+000167 00AA 310000          10      LD  SP,0
+                                
+00016A 00AD F5              11      PUSH    AF
+       00AF                     SAVEFCB EQU $+1
+00016B 00AE 3E00             7      LD  A,0
+00016D 00B0 B7               4      OR  A
+00016E 00B1 2811            12      JR  Z,BDOS4
+000170 00B3 C5              11      PUSH    BC
+000171 00B4 D5              11      PUSH    DE
+000172 00B5 E5              11      PUSH    HL
+000173 00B6 4F               4      LD  C,A
+000174 00B7 0600             7      LD  B,0
+       00B9                     ALTFCB1:
+000176 00B9 21D600          10      LD  HL,ALTFCB
+       00BD                     SAVE_DE EQU $+1
+000179 00BC 110000          10      LD  DE,0
+00017C 00BF EDB0                    LDIR
+00017E 00C1 E1              10      POP HL
+00017F 00C2 D1              10      POP DE
+000180 00C3 C1              10      POP BC
+       00C4                     BDOS4:
+000181 00C4 F1              10      POP AF
+000182 00C5 C9              10      RET
+                                
+       00C6                     CONST1:
+000183 00C6 0E0B             7      LD  C,0BH
+000185 00C8 C30500          10      JP  SYSTEM
+       00CB                     CONIN1:
+000188 00CB 0E07             7      LD  C,7
+00018A 00CD C30500          10      JP  SYSTEM
+       00D0                     CONOUT1:
+00018D 00D0 59               4      LD  E,C
+00018E 00D1 0E02             7      LD  C,2
+000190 00D3 C30500          10      JP  SYSTEM
+                                
+       00D6                     ALTFCB:
+000193 00D6                         DS  37
+0001B8 00FB                         DS  5
+                                ;           下位1バイト0になるように
+       0100                     BOOT:
+0001BD 0100 C30D00          10      JP  WBOOT1
+       0103                     WBOOT:
+0001C0 0103 C30D00          10      JP  WBOOT1
+       0106                     CONST_:         ;(BDOS)コンソール直接入力
+0001C3 0106 C3C600          10      JP  CONST1
+       0109                     CONIN:
+0001C6 0109 C3CB00          10      JP  CONIN1
+       010C                     CONOUT:
+0001C9 010C C3D000          10      JP  CONOUT1
+       010F                     FCBCMD:
+0001CC 010F 00434F4D4D414E44        DB  0,"COMMAND COM",0,0,0,0
+            20434F4D00000000    
+       011F                     ERROR:
+0001DC 011F 0D0A496E7320444F        DB  00DH,00AH,"Ins DOS$"
+            5324                
+       0129                     MAIN_END:
+[EOF:DOS.ASM:UTF_8]
