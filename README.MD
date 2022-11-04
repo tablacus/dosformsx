@@ -16,6 +16,12 @@ https://github.com/tablacus/LSX-Dodgers/blob/master/LDCMD.TXT
 
 起動時にはAUTOEXECというコマンドを実行します。「AUTOEXEC.COM」や「AUTOEXEC.BAT」があればそのまま実行します。
 
+# エミュレータ用イメージファイル
+
+以下のページの Assets からダウンロードできます。
+
+https://github.com/tablacus/dosformsx/releases
+
 # 参考文献
 
 ASCAT編集部「MSXテクニカルガイドブック　第四版＋ディスク編」
