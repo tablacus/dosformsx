@@ -6,13 +6,11 @@
 
 動作させるためには64KBのRAMとフロッピーディスクドライブを持つMSXかエミュレータが必要です。
 
-コマンドラインプロセッサの似非COMMANDはMSX-DOS互換OSの[LSX-Dodgers](https://github.com/tablacus/LSX-Dodgers)をベースにして作成しました。
+コマンドシェルの似非COMMANDはMSX-DOS互換OSの[LSX-Dodgers](https://github.com/tablacus/LSX-Dodgers)をベースにして作成しました。
 
-内部コマンドについては以下のLSX-Dodgers用のものから「PATH」コマンドを抜いたものになっています。
+内部コマンドについては以下のLSX-Dodgers用とほぼ同じです。
 
 https://github.com/tablacus/LSX-Dodgers/blob/master/LDCMD.TXT
-
-バッチファイル(.BAT)はMSX-DOSやLSX-Dodgersと違い1行しか使えませんし「%1」などのパラメータ置き換えも使えません。
 
 起動時にはAUTOEXECというコマンドを実行します。「AUTOEXEC.COM」や「AUTOEXEC.BAT」があればそのまま実行します。
 
@@ -21,6 +19,13 @@ https://github.com/tablacus/LSX-Dodgers/blob/master/LDCMD.TXT
 以下のページの Assets からダウンロードできます。
 
 https://github.com/tablacus/dosformsx/releases
+
+# 基本的なシステムコールの使い方のサンプル
+
+https://github.com/tablacus/LSX-Dodgers/wiki
+
+LSX-Dodgersのwikiに文字列を表示したり、ファイルを読み出したり、書き込んだり、削除したりするサンプルがあります。
+
 
 # 参考文献
 
