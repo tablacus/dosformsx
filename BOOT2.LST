@@ -1,0 +1,53 @@
+                                ;*** AILZ80ASM *** Z-80 Assembler, version 1.0.0.0, LST:Full:4
+                                ;   似非DOS BOOT2 (DOS2)
+                                
+       F37D                         BDOS    EQU 0F37DH
+                                
+000000 C000                         ORG 0C000H
+                                ;
+                                ;   BPB
+                                ;
+000000 C000 EBFE90444F532020        DB  0EBH,0FEH,90H,"DOS  "
+000008 C008 2020200002020100        DB  "   ",00H,02H,02H,01H,00H
+000010 C010 027000A005F90300        DB  02H,70H,00H,0A0H,05H,0F9H,03H,00H
+000018 C018 090002000000            DB  09H,00H,02H,00H,00H,00H
+00001E C01E 1810            12      JR  START
+                                
+000020 C020 564F4C5F494400          DB  "VOL_ID",0
+                                
+000027 C027 3E32             7      LD  A,'2'
+000029 C029 063A             7      LD  B,':'
+00002B C02B                         DS  5   
+                                
+       C030                     START:
+000030 C030 D0              11      RET NC
+                                
+                                ;   EX  DE,HL
+                                ;   CALL    JP_HL
+                                
+000031 C031 115DC0          10      LD  DE,FCB
+000034 C034 0E0F             7      LD  C,00FH
+000036 C036 CD7DF3          17      CALL    BDOS
+                                
+000039 C039 110001          10      LD  DE,00100H
+00003C C03C 0E1A             7      LD  C,01AH      ;(BDOS)DTAの設定
+00003E C03E CD7DF3          17      CALL    BDOS
+                                
+000041 C041 210000          10      LD  HL,0
+000044 C044 227EC0          16      LD  (FCB+33),HL
+000047 C047 2280C0          16      LD  (FCB+35),HL
+00004A C04A 2C               4      INC L
+00004B C04B 226BC0          16      LD  (FCB+14),HL
+                                
+00004E C04E 115DC0          10      LD  DE,FCB
+000051 C051 2100BF          10      LD  HL,0BF00H
+000054 C054 0E27             7      LD  C,027H      ;(BDOS)ランダム・ブロック・リード
+000056 C056 CD7DF3          17      CALL    BDOS
+                                
+000059 C059 C30001          10      JP  0100H
+       C05C                     JP_HL:
+00005C C05C E9               4      JP  (HL)
+                                
+00005D C05D 00444F5320202020    FCB:    DB  0, "DOS     SYS",0,0,0,0
+            2053595300000000    
+[EOF:BOOT2.ASM:SHIFT_JIS]

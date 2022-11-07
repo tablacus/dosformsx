@@ -2,1403 +2,1508 @@
                                 
                                 ;   似非COMMAND.COM
                                 
-                                SYSTEM  EQU 00005H
-                                BASE    EQU 0000BH
-                                FCB1    EQU 0005CH
-                                FCB2    EQU 0006CH
-                                DTA1    EQU 00080H
+       0005                     SYSTEM  EQU 00005H
+       000B                     BASE    EQU 0000BH
+       005C                     FCB1    EQU 0005CH
+       006C                     FCB2    EQU 0006CH
+       0080                     DTA1    EQU 00080H
                                 
-                                LINLEN  EQU 0F3B0H
-                                PUTPNT  EQU 0F3F8H
-                                GETPNT  EQU 0F3FAH
-                                BUF EQU 0F55EH
-                                KEYBUF  EQU 0FBF0H
-                                KEYBUFE EQU 0FBF0H+40
+       F3B0                     LINLEN  EQU 0F3B0H
+       F3F8                     PUTPNT  EQU 0F3F8H
+       F3FA                     GETPNT  EQU 0F3FAH
+       F55E                     BUF EQU 0F55EH
+       FBF0                     KEYBUF  EQU 0FBF0H
+       FC18                     KEYBUFE EQU 0FBF0H+40
                                 
-                                PATHX   EQU 32
-                                PATHD   EQU BUF+258-32
+       0020                     PATHX   EQU 32
+       F640                     PATHD   EQU BUF+258-32
                                 
-                                    ORG 0100H
-       0000                 10      JP  START
-       0000                     VER:    DB  00DH,00AH,"COMMAND v0.02",00DH,00AH,'$'
-       0000                     START:
-       0000                 20      LD  SP,(SYSTEM+1)
-       0000                  7      LD  C,06FH      ;(BDOS)MSX-DOS のバージョン番号の獲得
-       0000                 17      CALL    SYSTEM
-       0000                 11      RET C
-       0000                 10      LD  HL,0011DH
-       0000                 15      SBC HL,BC
-       0000                  4      LD  A,H
-       0000                 13      LD  (MAJOR_VER),A
-       0000                  4      OR  L
-       0000                 13      LD  (IS_MSX),A
-       0000                 13      LD  A,(DTA1)
-       0000                  4      OR  A
-       0000                 12      JR  Z,WSTART
-       0000                 10      LD  DE,VER
-       0000                  7      LD  C,9
-       0000                 17      CALL    SYSTEM
-       0000                 10      LD  DE,DTA1+1
-       0000                 17      CALL    COMANL
-       0000                     WSTART:
-       0000                 17      CALL    LTNL
-       0000                     COMMAND:
-       0000                 17      CALL    SETDTA1
-       0000                 11      PUSH    DE
-       0000                 11      PUSH    BC
-       0000                 11      PUSH    HL
-       0000                  7      LD  C,019H
-       0000                 17      CALL    SYSTEM
-       0000                 10      POP HL
-       0000                 10      POP BC
-       0000                  7      ADD A,'A'
-       0000                  4      LD  E,A
-       0000                 17      CALL    _PRINT
-       0000                  7      LD  E,'>'
-       0000                 17      CALL    _PRINT
-       0000                 10      POP DE      ;DE=DTA1
-       0000                  7      LD  A,80
-       0000                  7      LD  (DE),A
-       0000                  7      LD  C,0AH       ;(BDOS)文字列入力
-       0000                 17      CALL    SYSTEM
-       0000                 17      CALL    LTNL
+000000 0100                         ORG 0100H
+000000 0100 C31501          10      JP  START
+000003 0103 0D0A434F4D4D414E    VER:    DB  00DH,00AH,"COMMAND v0.03",00DH,00AH,'$'
+            442076302E30330D    
+            0A24                
+       0115                     START:
+000015 0115 ED7B0600        20      LD  SP,(SYSTEM+1)
+000019 0119 0E6F             7      LD  C,06FH      ;(BDOS)MSX-DOS のバージョン番号の獲得
+00001B 011B CD0500          17      CALL    SYSTEM
+00001E 011E D8              11      RET C
+00001F 011F 211D01          10      LD  HL,0011DH
+000022 0122 ED42            15      SBC HL,BC
+000024 0124 78               4      LD  A,B
+000025 0125 32F609          13      LD  (MAJOR_VER),A
+000028 0128 B5               4      OR  L
+000029 0129 32F509          13      LD  (IS_MSX),A
+00002C 012C 3A8000          13      LD  A,(DTA1)
+00002F 012F B7               4      OR  A
+000030 0130 280E            12      JR  Z,WSTART
+000032 0132 110301          10      LD  DE,VER
+000035 0135 0E09             7      LD  C,9
+000037 0137 CD0500          17      CALL    SYSTEM
+00003A 013A 118100          10      LD  DE,DTA1+1
+00003D 013D CD7901          17      CALL    COMANL
+       0140                     WSTART:
+000040 0140 CD6F04          17      CALL    LTNL
+       0143                     COMMAND:
+000043 0143 CD8A02          17      CALL    SETDTA1
+000046 0146 D5              11      PUSH    DE
+000047 0147 C5              11      PUSH    BC
+000048 0148 E5              11      PUSH    HL
+000049 0149 0E19             7      LD  C,019H
+00004B 014B CD0500          17      CALL    SYSTEM
+00004E 014E E1              10      POP HL
+00004F 014F C1              10      POP BC
+000050 0150 C641             7      ADD A,'A'
+000052 0152 5F               4      LD  E,A
+000053 0153 CD7D07          17      CALL    _PRINT
+000056 0156 1E3E             7      LD  E,'>'
+000058 0158 CD7D07          17      CALL    _PRINT
+00005B 015B D1              10      POP DE      ;DE=DTA1
+00005C 015C 3E50             7      LD  A,80
+00005E 015E 12               7      LD  (DE),A
+00005F 015F 0E0A             7      LD  C,0AH       ;(BDOS)文字列入力
+000061 0161 CD0500          17      CALL    SYSTEM
+000064 0164 CD6F04          17      CALL    LTNL
                                 
-       0000                 10      LD  DE,DTA1+2
-       0000                 17      CALL    COMANL
-       0000                 12      JR  NC,COMMAND
-       0000                 10      LD  DE,COMERM
-       0000                  7      LD  C,9     ;(BDOS)文字列出力
-       0000                 17      CALL    SYSTEM
-       0000                 12      JR  WSTART
+000067 0167 118200          10      LD  DE,DTA1+2
+00006A 016A CD7901          17      CALL    COMANL
+00006D 016D 30D4            12      JR  NC,COMMAND
+00006F 016F 11EE09          10      LD  DE,COMERM
+000072 0172 0E09             7      LD  C,9     ;(BDOS)文字列出力
+000074 0174 CD0500          17      CALL    SYSTEM
+000077 0177 18C7            12      JR  WSTART
                                 
-       0000                     COMANL:
-       0000                 17      CALL    FILE
-       0000                 11      PUSH    DE
-       0000                 10      LD  DE,FNAME
-       0000                  7      LD  A,(DE)
-       0000                  7      CP  020H
-       0000                 12      JR  Z,SDVSW
-       0000                  6      DEC DE
-       0000                  7      LD  A,(DE)
-       0000                  7      ADD A,0FFH
-       0000                 12      JR  C,COMB
-       0000                  6      INC DE
+       0179                     COMANL:
+000079 0179 CDC707          17      CALL    FILE
+00007C 017C D5              11      PUSH    DE
+00007D 017D 116F0A          10      LD  DE,FNAME
+000080 0180 1A               7      LD  A,(DE)
+000081 0181 FE20             7      CP  020H
+000083 0183 284E            12      JR  Z,SDVSW
+000085 0185 1B               6      DEC DE
+000086 0186 1A               7      LD  A,(DE)
+000087 0187 C6FF             7      ADD A,0FFH
+000089 0189 380A            12      JR  C,COMB
+00008B 018B 13               6      INC DE
                                 
-       0000                 10      LD  HL,COMTB
-       0000                  7      LD  A,COMS
-       0000                  4      LD  B,A
-       0000                 17      CALL    CPNAME
-       0000                     COMB:
-       0000                 10      POP DE
-       0000                 10      JP  NC,JP_HL
-       0000                     COMB2:
-       0000                  4      EX  DE,HL
-       0000                 16      LD  (COMPAT+1),HL
-       0000                 11      PUSH    AF
-       0000                 17      CALL    CEXE4
-       0000                 10      POP AF
-       0000                 10      LD  HL,FNAME
-       0000                 10      LD  DE,FCB2+1   ;COMMAND NAME
-       0000                 10      LD  BC,11
-       0000                         LDIR
-       0000                 10      LD  DE,PATHD
-       0000                 13      LD  A,(IS_MSX)
-       0000                  4      OR  A
-       0000                 12      JR  NZ,CEX1
-       0000                 10      LD  DE,ZERO
-       0000                     CEX1:
-       0000                  7      LD  A,(DE)
-       0000                  7      CP  020H
-       0000                 11      RET C
-       0000                 17      CALL    FILEC
-       0000                 11      PUSH    DE
-       0000                 10      LD  HL,FCB2+1   ;COMMAND NAME
-       0000                 10      LD  DE,FNAME
-       0000                 10      LD  BC,11
-       0000                         LDIR
-       0000                 17      CALL    CEXE4
-       0000                 10      POP DE
-       0000                  6      INC DE
-       0000                 12      JR  CEX1
+00008C 018C 219909          10      LD  HL,COMTB
+00008F 018F 3E09             7      LD  A,COMS
+000091 0191 47               4      LD  B,A
+000092 0192 CDEE08          17      CALL    CPNAME
+       0195                     COMB:
+000095 0195 D1              10      POP DE
+000096 0196 D27C07          10      JP  NC,JP_HL
+       0199                     COMB2:
+000099 0199 EB               4      EX  DE,HL
+00009A 019A 221103          16      LD  (COMPAT+1),HL
+00009D 019D F5              11      PUSH    AF
+00009E 019E CDB202          17      CALL    CEXE4
+0000A1 01A1 F1              10      POP AF
+0000A2 01A2 216F0A          10      LD  HL,FNAME
+0000A5 01A5 116D00          10      LD  DE,FCB2+1   ;COMMAND NAME
+0000A8 01A8 010B00          10      LD  BC,11
+0000AB 01AB EDB0                    LDIR
+0000AD 01AD 1140F6          10      LD  DE,PATHD
+0000B0 01B0 3AF509          13      LD  A,(IS_MSX)
+0000B3 01B3 B7               4      OR  A
+0000B4 01B4 2003            12      JR  NZ,CEX1
+0000B6 01B6 11940A          10      LD  DE,ZERO
+       01B9                     CEX1:
+0000B9 01B9 1A               7      LD  A,(DE)
+0000BA 01BA FE20             7      CP  020H
+0000BC 01BC D8              11      RET C
+0000BD 01BD CDBC07          17      CALL    FILEC
+0000C0 01C0 D5              11      PUSH    DE
+0000C1 01C1 216D00          10      LD  HL,FCB2+1   ;COMMAND NAME
+0000C4 01C4 116F0A          10      LD  DE,FNAME
+0000C7 01C7 010B00          10      LD  BC,11
+0000CA 01CA EDB0                    LDIR
+0000CC 01CC CDB202          17      CALL    CEXE4
+0000CF 01CF D1              10      POP DE
+0000D0 01D0 13               6      INC DE
+0000D1 01D1 18E6            12      JR  CEX1
                                 
-       0000                     SDVSW:
-       0000                 10      POP AF
-       0000                 13      LD  A,(FDRV)
-       0000                  4      DEC A
-       0000                  4      LD  E,A
-       0000                  7      LD  C,00EH      ;(BDOS)カレント・ドライブの設定
-       0000                 12      JR  SYSTEM0
+       01D3                     SDVSW:
+0000D3 01D3 F1              10      POP AF
+0000D4 01D4 3A6E0A          13      LD  A,(FDRV)
+0000D7 01D7 3D               4      DEC A
+0000D8 01D8 5F               4      LD  E,A
+0000D9 01D9 0E0E             7      LD  C,00EH      ;(BDOS)カレントドライブの設定
+0000DB 01DB C39102          10      JP  SYSTEM0
                                 
-       0000                     OPEN1:
-       0000                 10      LD  HL,FDRV
-       0000                     OPEN:
-       0000                  7      LD  C,011H      ;(BDOS)最初のファイルの検索
-       0000                     OPEN3:
-       0000                 11      PUSH    DE
-       0000                 10      LD  DE,DTA_CCP
-       0000                 17      CALL    SETDTA
-       0000                  4      EX  DE,HL
-       0000                 17      CALL    SYSTEM
-       0000                 10      POP DE
-       0000                  4      OR  A
-       0000                 10      RET
+       01DE                     OPEN1_D2:           ;DOS2対応
+0000DE 01DE 3AF609          13      LD  A,(MAJOR_VER)
+0000E1 01E1 FE02             7      CP  2
+0000E3 01E3 385E            12      JR  C,OPEN1
                                 
-       0000                     OPEN2:
-       0000                  7      LD  C,012H
-       0000                 12      JR  OPEN3
+0000E5 01E5 0610             7      LD  B,010H
+0000E7 01E7 0E5B             7      LD  C,05BH      ;(BDOS)パス名の解析
+0000E9 01E9 11F909          10      LD  DE,PATH_CCP
+0000EC 01EC CD0500          17      CALL    SYSTEM
                                 
-       0000                     DEFCB:              ;Z=Ok NZ=Error
-       0000                 10      LD  DE,DTA_CCP
-       0000                 17      CALL    SYSC0F
+0000EF 01EF D5              11      PUSH    DE
+0000F0 01F0 E5              11      PUSH    HL
                                 
-       0000                 10      LD  HL,0
-       0000                 16      LD  (DTA_CCP+33),HL
-       0000                 16      LD  (DTA_CCP+35),HL
-       0000                 10      LD  DE,DATA
-       0000                     SETDTA:
-       0000                 11      PUSH    BC
-       0000                 11      PUSH    DE
-       0000                 11      PUSH    HL
-       0000                  7      LD  C,01AH      ;(BDOS)DTAの設定
-       0000                 17      CALL    SYSTEM
-       0000                 10      POP HL
-       0000                 10      POP DE
-       0000                 10      POP BC
-       0000                 10      RET
+0000F1 01F1 C5              11      PUSH    BC
+0000F2 01F2 0E19             7      LD  C,19H       ;(BDOS)カレントドライブの獲得
+0000F4 01F4 CD0500          17      CALL    SYSTEM
+0000F7 01F7 321702          13      LD  (BDRIVE),A
+0000FA 01FA C1              10      POP BC
                                 
-       0000                     SETDTA1:
-       0000                 10      LD  DE,DTA1
-       0000                 12      JR  SETDTA
+0000FB 01FB 79               4      LD  A,C
+0000FC 01FC 32390A          13      LD  (DTA_CCP),A ;ドライブ番号
+0000FF 01FF 3D               4      DEC A
+000100 0200 5F               4      LD  E,A
+000101 0201 0E0E             7      LD  C,00EH      ;(BDOS)カレントドライブの設定
+000103 0203 CD9102          17      CALL    SYSTEM0
                                 
-       0000                     SYSC0F:
-       0000                  7      LD  C,00FH      ;(BDOS)ファイルのオープン
-       0000                     SYSTEM0:
-       0000                 17      CALL    SYSTEM
-       0000                  4      OR  A
-       0000                 10      RET
+000106 0206 E1              10      POP HL
+000107 0207 D1              10      POP DE
                                 
-       0000                     C_CD:
-       0000                 17      CALL    SPCUT
-       0000                  7      LD  C,5AH       ;(BDOS)CHDIR カレントディレクトリの変更
-       0000                 10      JP  SYSTEM
+000108 0208 3A7B0A          13      LD  A,(FDRV+13)
+00010B 020B 47               4      LD  B,A
+00010C 020C 0E40             7      LD  C,040H      ;(BDOS)最初のエントリ検索
+00010E 020E CD0500          17      CALL    SYSTEM
+000111 0211 DD22F709        20      LD  (SEARCH_IX),IX
+000115 0215 F5              11      PUSH    AF
+       0217                     BDRIVE  EQU $+1
+000116 0216 1E00             7      LD  E,0
+000118 0218 0E0E             7      LD  C,00EH      ;(BDOS)カレントドライブの設定
+00011A 021A CD9102          17      CALL    SYSTEM0
+00011D 021D F1              10      POP AF
+       021E                     FIB2DIRENT:
+00011E 021E B7               4      OR  A
+00011F 021F C0              11      RET NZ
                                 
-       0000                     S27DTA:
-       0000                 10      LD  DE,1
-       0000                 20      LD  (DTA_CCP+14),DE
-       0000                 10      LD  DE,DTA_CCP
-       0000                     S27:
-       0000                  7      LD  C,027H      ;(BDOS)ランダム・ブロック・リード
-       0000                 17      CALL    SYSTEM
-       0000                  4      OR  A
-       0000                 10      RET
+000120 0220 ED5BF709        20      LD  DE,(SEARCH_IX)
+000124 0224 13               6      INC DE
+000125 0225 213A0A          10      LD  HL,DTA_CCP+1
+000128 0228 0E5C             7      LD  C,05CH      ;(BDOS)ファイル名の解析
+00012A 022A CD0500          17      CALL    SYSTEM
                                 
-       0000                     CEXE4:
-       0000                 13      LD  A,(FDRV)
-       0000                 13      LD  (00057H),A
-       0000                 16      LD  HL,(FDRV+14)
-       0000                 16      LD  (00058H),HL
+00012D 022D 2AF709          16      LD  HL,(SEARCH_IX)
+000130 0230 110E00          10      LD  DE,14
+000133 0233 19              11      ADD HL,DE
+000134 0234 11450A          10      LD  DE,DTA_CCP+1+8+3
+000137 0237 EDA0            16      LDI
+000139 0239 11500A          10      LD  DE,DTA_CCP+1+8+3+1+10
+00013C 023C 010A00          10      LD  BC,2+2+2+4  ;最終変更時刻+最終変更日付+開始クラスタ+ファイルサイズ 
+00013F 023F EDB0                    LDIR
+000141 0241 AF               4      XOR A
+000142 0242 C9              10      RET
                                 
-       0000                 10      LD  HL,FNAME+8
-       0000                  7      LD  A,(HL)
-       0000                  7      CP  020H
-       0000                 12      JR  NZ,CEXE7
-       0000                  7      LD  A,'?'
-       0000                  7      LD  (HL),A
-       0000                  6      INC HL
-       0000                  7      LD  (HL),A
-       0000                  6      INC HL
-       0000                  7      LD  (HL),A
-       0000                     CEXE7:
-       0000                 17      CALL    OPEN1
-       0000                     CEXE5:
-       0000                 11      RET NZ
-       0000                 16      LD  HL,(DTA_CCP+1+9)
-       0000                  4      LD  A,H
-       0000                 17      CALL    CAP
-       0000                  4      LD  H,A
-       0000                  4      LD  A,L
-       0000                 17      CALL    CAP
-       0000                  4      LD  L,A
-       0000                 13      LD  A,(DTA_CCP+1+8)
-       0000                 17      CALL    CAP
-       0000                  7      SUB 'B'
-       0000                 12      JR  Z,C_BAT
-       0000                  4      DEC A       ;'C'
-       0000                 12      JR  Z,C_EXE
-       0000                     CEXE6:
-       0000                 17      CALL    OPEN2
-       0000                 12      JR  CEXE5
+       0243                     OPEN1:
+000143 0243 216E0A          10      LD  HL,FDRV
+       0246                     OPEN:
+000146 0246 0E11             7      LD  C,011H      ;(BDOS)最初のファイルの検索
+       0248                     OPEN3:
+000148 0248 D5              11      PUSH    DE
+000149 0249 11390A          10      LD  DE,DTA_CCP
+00014C 024C CD7E02          17      CALL    SETDTA
+00014F 024F EB               4      EX  DE,HL
+000150 0250 CD0500          17      CALL    SYSTEM
+000153 0253 D1              10      POP DE
+000154 0254 B7               4      OR  A
+000155 0255 C9              10      RET
                                 
-       0000                     C_EXE:
-       0000                  4      LD  A,H
-       0000                  7      CP  'M'
-       0000                 12      JR  NZ,CEXE6
+       0256                     OPEN2_D2:           ;DOS2対応
+000156 0256 3AF609          13      LD  A,(MAJOR_VER)
+000159 0259 FE02             7      CP  2
+00015B 025B 380B            12      JR  C,OPEN2
+00015D 025D DD2AF709        20      LD  IX,(SEARCH_IX)
+000161 0261 0E41             7      LD  C,41H       ;(BDOS)次のエントリ検索
+000163 0263 CD0500          17      CALL    SYSTEM
+000166 0266 18B6            12      JR  FIB2DIRENT
+       0268                     OPEN2:
+000168 0268 0E12             7      LD  C,012H
+00016A 026A 18DC            12      JR  OPEN3
                                 
-       0000                 17      CALL    DEFCB
-       0000                 16      LD  HL,(SYSTEM+1)
-       0000                 10      LD  DE,DATA
-       0000                 15      SBC HL,DE
-       0000                 17      CALL    S27DTA
-       0000                  4      DEC A
-       0000                  4      SCF
-       0000                 11      RET NZ
-       0000                  4      LD  A,H
-       0000                  4      OR  L
-       0000                  4      SCF
-       0000                 11      RET Z
-       0000                 16      LD  (COMSIZ+1),HL
-       0000                 17      CALL    SETDTA1
-       0000                 10  COMPAT: LD  DE,0
-       0000                 17      CALL    SETFCB
+       026C                     DEFCB:              ;Z=Ok NZ=Error
+00016C 026C 11390A          10      LD  DE,DTA_CCP
+00016F 026F CD8F02          17      CALL    SYSC0F
                                 
-       0000                  4      XOR A
-       0000                  4      LD  H,A
-       0000                  4      LD  L,A ;HL=0x0000
-       0000                  4      DI
-       0000                 20  SPPAT:  LD  SP,(SYSTEM+1)
-       0000                 11      PUSH    HL
-       0000                 10      LD  HL,0B0EDH   ;LDIR 
-       0000                 16      LD  (000FEH),HL
-       0000                 10      LD  HL,DATA
-       0000                 10      LD  DE,00100H
-       0000                 10  COMSIZ: LD  BC,0
-       0000                  4      EI
-       0000                 10      JP  000FEH
+000172 0272 210000          10      LD  HL,0
+000175 0275 225A0A          16      LD  (DTA_CCP+33),HL
+000178 0278 225C0A          16      LD  (DTA_CCP+35),HL
+00017B 027B 11950A          10      LD  DE,DATA
+       027E                     SETDTA:
+00017E 027E C5              11      PUSH    BC
+00017F 027F D5              11      PUSH    DE
+000180 0280 E5              11      PUSH    HL
+000181 0281 0E1A             7      LD  C,01AH      ;(BDOS)DTAの設定
+000183 0283 CD0500          17      CALL    SYSTEM
+000186 0286 E1              10      POP HL
+000187 0287 D1              10      POP DE
+000188 0288 C1              10      POP BC
+000189 0289 C9              10      RET
                                 
-       0000                     C_BAT:
-       0000                 10      LD  DE,'A'+'T'*256
-       0000                 15      SBC HL,DE
-       0000                 12      JR  NZ,CEXE6
+       028A                     SETDTA1:
+00018A 028A 118000          10      LD  DE,DTA1
+00018D 028D 18EF            12      JR  SETDTA
                                 
-       0000                 10      POP AF
-       0000                 10      POP AF
-       0000                 17      CALL    DEFCB
-       0000                 10      LD  HL,00200H
-       0000                 17      CALL    S27DTA
-       0000                  7      ADD A,0FEH
-       0000                 11      RET C
-       0000                  4      LD  A,L
-       0000                  4      OR  A
-       0000                  4      SCF
-       0000                 11      RET Z
-       0000                  4      INC A
-       0000                 11      PUSH    AF
+       028F                     SYSC0F:
+00018F 028F 0E0F             7      LD  C,00FH      ;(BDOS)ファイルのオープン
+       0291                     SYSTEM0:
+000191 0291 CD0500          17      CALL    SYSTEM
+000194 0294 B7               4      OR  A
+000195 0295 C9              10      RET
+                                
+       0296                     C_CD:
+000196 0296 CD9907          17      CALL    FILEC_D2
+000199 0299 11F909          10      LD  DE,PATH_CCP
+00019C 029C 0E5A             7      LD  C,5AH       ;(BDOS)CHDIR カレントディレクトリの変更
+00019E 029E C30500          10      JP  SYSTEM
+                                
+       02A1                     S27DTA:
+0001A1 02A1 110100          10      LD  DE,1
+0001A4 02A4 ED53470A        20      LD  (DTA_CCP+14),DE
+0001A8 02A8 11390A          10      LD  DE,DTA_CCP
+       02AB                     S27:
+0001AB 02AB 0E27             7      LD  C,027H      ;(BDOS)ランダム・ブロック・リード
+0001AD 02AD CD0500          17      CALL    SYSTEM
+0001B0 02B0 B7               4      OR  A
+0001B1 02B1 C9              10      RET
+                                
+       02B2                     CEXE4:
+0001B2 02B2 3A6E0A          13      LD  A,(FDRV)
+0001B5 02B5 325700          13      LD  (00057H),A
+0001B8 02B8 2A7C0A          16      LD  HL,(FDRV+14)
+0001BB 02BB 225800          16      LD  (00058H),HL
+                                
+0001BE 02BE 21770A          10      LD  HL,FNAME+8
+0001C1 02C1 7E               7      LD  A,(HL)
+0001C2 02C2 FE20             7      CP  020H
+0001C4 02C4 2007            12      JR  NZ,CEXE7
+0001C6 02C6 3E3F             7      LD  A,'?'
+0001C8 02C8 77               7      LD  (HL),A
+0001C9 02C9 23               6      INC HL
+0001CA 02CA 77               7      LD  (HL),A
+0001CB 02CB 23               6      INC HL
+0001CC 02CC 77               7      LD  (HL),A
+       02CD                     CEXE7:
+0001CD 02CD CD4302          17      CALL    OPEN1
+       02D0                     CEXE5:
+0001D0 02D0 C0              11      RET NZ
+0001D1 02D1 2A430A          16      LD  HL,(DTA_CCP+1+9)
+0001D4 02D4 7C               4      LD  A,H
+0001D5 02D5 CDA908          17      CALL    CAP
+0001D8 02D8 67               4      LD  H,A
+0001D9 02D9 7D               4      LD  A,L
+0001DA 02DA CDA908          17      CALL    CAP
+0001DD 02DD 6F               4      LD  L,A
+0001DE 02DE 3A420A          13      LD  A,(DTA_CCP+1+8)
+0001E1 02E1 CDA908          17      CALL    CAP
+0001E4 02E4 D642             7      SUB 'B'
+0001E6 02E6 284A            12      JR  Z,C_BAT
+0001E8 02E8 3D               4      DEC A       ;'C'
+0001E9 02E9 2805            12      JR  Z,C_EXE
+       02EB                     CEXE6:
+0001EB 02EB CD6802          17      CALL    OPEN2
+0001EE 02EE 18E0            12      JR  CEXE5
+                                
+       02F0                     C_EXE:
+0001F0 02F0 7C               4      LD  A,H
+0001F1 02F1 FE4D             7      CP  'M'
+0001F3 02F3 20F6            12      JR  NZ,CEXE6
+                                
+0001F5 02F5 CD6C02          17      CALL    DEFCB
+0001F8 02F8 2A0600          16      LD  HL,(SYSTEM+1)
+0001FB 02FB 11950A          10      LD  DE,DATA
+0001FE 02FE ED52            15      SBC HL,DE
+000200 0300 CDA102          17      CALL    S27DTA
+000203 0303 3D               4      DEC A
+000204 0304 37               4      SCF
+000205 0305 C0              11      RET NZ
+000206 0306 7C               4      LD  A,H
+000207 0307 B5               4      OR  L
+000208 0308 37               4      SCF
+000209 0309 C8              11      RET Z
+00020A 030A 222C03          16      LD  (COMSIZ+1),HL
+00020D 030D CD8A02          17      CALL    SETDTA1
+000210 0310 110000          10  COMPAT: LD  DE,0
+000213 0313 CDB505          17      CALL    SETFCB
+                                
+000216 0316 AF               4      XOR A
+000217 0317 67               4      LD  H,A
+000218 0318 6F               4      LD  L,A ;HL=0x0000
+000219 0319 F3               4      DI
+00021A 031A ED7B0600        20  SPPAT:  LD  SP,(SYSTEM+1)
+00021E 031E E5              11      PUSH    HL
+00021F 031F 21EDB0          10      LD  HL,0B0EDH   ;LDIR 
+000222 0322 22FE00          16      LD  (000FEH),HL
+000225 0325 21950A          10      LD  HL,DATA
+000228 0328 110001          10      LD  DE,00100H
+00022B 032B 010000          10  COMSIZ: LD  BC,0
+00022E 032E FB               4      EI
+00022F 032F C3FE00          10      JP  000FEH
+                                
+       0332                     C_BAT:
+000232 0332 114154          10      LD  DE,'A'+'T'*256
+000235 0335 ED52            15      SBC HL,DE
+000237 0337 20B2            12      JR  NZ,CEXE6
+                                
+000239 0339 F1              10      POP AF
+00023A 033A F1              10      POP AF
+00023B 033B CD6C02          17      CALL    DEFCB
+00023E 033E 210002          10      LD  HL,00200H
+000241 0341 CDA102          17      CALL    S27DTA
+000244 0344 C6FE             7      ADD A,0FEH
+000246 0346 D8              11      RET C
+000247 0347 7D               4      LD  A,L
+000248 0348 B7               4      OR  A
+000249 0349 37               4      SCF
+00024A 034A C8              11      RET Z
+00024B 034B 3C               4      INC A
+00024C 034C F5              11      PUSH    AF
                                 ;   CALL    KEYBC
                                 ;   LD  A,6
                                 ;   CALL    MSG_A
-       0000                 10      POP BC
-       0000                 10      LD  HL,DATA
-       0000                     BAT1:
-       0000                  4      AND A
-       0000                  4      DEC B
-       0000                 11      RET Z
-       0000                  7      LD  A,(HL)
-       0000                  7      CP  '%'
-       0000                 12      JR  Z,BAT2
-       0000                     BAT1X:
-       0000                  7      LD  A,(HL)
-       0000                  6      INC HL
-       0000                  7      CP  01AH
-       0000                 11      RET Z
-       0000                  7      CP  00AH
-       0000                 17      CALL    NZ,KEYBS
-       0000                 12      JR  BAT1
+00024D 034D C1              10      POP BC
+00024E 034E 21950A          10      LD  HL,DATA
+       0351                     BAT1:
+000251 0351 A7               4      AND A
+000252 0352 05               4      DEC B
+000253 0353 C8              11      RET Z
+000254 0354 7E               7      LD  A,(HL)
+000255 0355 FE25             7      CP  '%'
+000257 0357 280C            12      JR  Z,BAT2
+       0359                     BAT1X:
+000259 0359 7E               7      LD  A,(HL)
+00025A 035A 23               6      INC HL
+00025B 035B FE1A             7      CP  01AH
+00025D 035D C8              11      RET Z
+00025E 035E FE0A             7      CP  00AH
+000260 0360 C46A09          17      CALL    NZ,KEYBS
+000263 0363 18EC            12      JR  BAT1
                                 
-       0000                     BAT2:
-       0000                  6      INC HL
-       0000                  7      LD  A,(HL)
-       0000                  6      DEC HL
-       0000                  7      SUB '1'
-       0000                 12      JR  C,BAT1X
-       0000                  7      CP  9
-       0000                 12      JR  NC,BAT1X
-       0000                  6      INC HL
-       0000                  6      INC HL
-       0000                  4      INC A
-       0000                  4      LD  C,A
-       0000                 20      LD  DE,(COMPAT+1)
-       0000                     BAT3:
-       0000                  7      LD  A,(DE)
-       0000                  4      OR  A
-       0000                 12      JR  Z,BAT1
-       0000                 17      CALL    SPCUT
-       0000                  4      DEC C
-       0000                 12      JR  Z,BAT5
-       0000                     BAT4:
-       0000                  7      LD  A,(DE)
-       0000                  7      CP  021H
-       0000                 12      JR  C,BAT3
-       0000                  6      INC DE
-       0000                 12      JR  BAT4
-       0000                     BAT5:
-       0000                  7      LD  A,(DE)
-       0000                  7      CP  021H
-       0000                 12      JR  C,BAT1
-       0000                  6      INC DE
-       0000                 17      CALL    KEYBS
-       0000                 12      JR  BAT5
+       0365                     BAT2:
+000265 0365 23               6      INC HL
+000266 0366 7E               7      LD  A,(HL)
+000267 0367 2B               6      DEC HL
+000268 0368 D631             7      SUB '1'
+00026A 036A 38ED            12      JR  C,BAT1X
+00026C 036C FE09             7      CP  9
+00026E 036E 30E9            12      JR  NC,BAT1X
+000270 0370 23               6      INC HL
+000271 0371 23               6      INC HL
+000272 0372 3C               4      INC A
+000273 0373 4F               4      LD  C,A
+000274 0374 ED5B1103        20      LD  DE,(COMPAT+1)
+       0378                     BAT3:
+000278 0378 1A               7      LD  A,(DE)
+000279 0379 B7               4      OR  A
+00027A 037A 28D5            12      JR  Z,BAT1
+00027C 037C CDA308          17      CALL    SPCUT
+00027F 037F 0D               4      DEC C
+000280 0380 2808            12      JR  Z,BAT5
+       0382                     BAT4:
+000282 0382 1A               7      LD  A,(DE)
+000283 0383 FE21             7      CP  021H
+000285 0385 38F1            12      JR  C,BAT3
+000287 0387 13               6      INC DE
+000288 0388 18F8            12      JR  BAT4
+       038A                     BAT5:
+00028A 038A 1A               7      LD  A,(DE)
+00028B 038B FE21             7      CP  021H
+00028D 038D 38C2            12      JR  C,BAT1
+00028F 038F 13               6      INC DE
+000290 0390 CD6A09          17      CALL    KEYBS
+000293 0393 18F5            12      JR  BAT5
                                 
-       0000                     SWITCH:
-       0000                  7      LD  A,(DE)
-       0000                     SW1:
-       0000                  6      INC DE
-       0000                  4      CP  C
-       0000                  7      LD  A,(DE)
-       0000                 11      RET Z
-       0000                  7      CP  020H
-       0000                 12      JR  NC,SW1
-       0000                     C_REM:
-       0000                  4      XOR A
-       0000                 10      RET
+       0395                     SWITCH:
+000295 0395 1A               7      LD  A,(DE)
+       0396                     SW1:
+000296 0396 13               6      INC DE
+000297 0397 B9               4      CP  C
+000298 0398 1A               7      LD  A,(DE)
+000299 0399 C8              11      RET Z
+00029A 039A FE20             7      CP  020H
+00029C 039C 30F8            12      JR  NC,SW1
+       039E                     C_REM:
+00029E 039E AF               4      XOR A
+00029F 039F C9              10      RET
                                 
-       0000                     C_DEL:
-       0000                 17      CALL    SETFCB
-       0000                  7      LD  C,8     ;(BDOS)エコーなしコンソール入力
-       0000                 17      CALL    SYSTEM
+       03A0                     C_DEL:
+0002A0 03A0 CDB505          17      CALL    SETFCB
+0002A3 03A3 0E08             7      LD  C,8     ;(BDOS)エコーなしコンソール入力
+0002A5 03A5 CD0500          17      CALL    SYSTEM
                                 
-       0000                  7      LD  C,013H
-       0000                 12      JR  CDEL1       ;(BDOS)ファイルの削除
+0002A8 03A8 0E13             7      LD  C,013H
+0002AA 03AA 180A            12      JR  CDEL1       ;(BDOS)ファイルの削除
                                 
-       0000                     C_REN:
-       0000                 17      CALL    SETFCB
-       0000                  7      LD  A,010H      ;ディレクトリも対象にする
-       0000                 13      LD  (FCB1+13),A ;属性
-       0000                  7      LD  C,017H      ;(BDOS)ファイル名の変更
-       0000                     CDEL1:
-       0000                 10      LD  DE,FCB1
-       0000                 17      CALL    SYSTEM
-       0000                  7      ADD A,0FFH
-       0000                 10      RET
+       03AC                     C_REN:
+0002AC 03AC CDB505          17      CALL    SETFCB
+0002AF 03AF 3E10             7      LD  A,010H      ;ディレクトリも対象にする(LSX-Dodgers)
+0002B1 03B1 326900          13      LD  (FCB1+13),A ;属性
+0002B4 03B4 0E17             7      LD  C,017H      ;(BDOS)ファイル名の変更
+       03B6                     CDEL1:
+0002B6 03B6 115C00          10      LD  DE,FCB1
+0002B9 03B9 CD0500          17      CALL    SYSTEM
+0002BC 03BC C6FF             7      ADD A,0FFH
+0002BE 03BE C9              10      RET
                                 
-       0000                     C_DIR:
-       0000                 17      CALL    FILEC
-       0000                 10      LD  HL,FDRV+1
-       0000                 17      CALL    CWILD1
-       0000                  7      LD  A,0F1H
-       0000                 13      LD  (FDRV+13),A
-       0000                 17      CALL    OPEN1
-       0000                     CDIR1:
-       0000                  4      OR  A
-       0000                 12      JR  NZ,PDSKF
-       0000                 17      CALL    P_NAME
-       0000                 17      CALL    OPEN2
-       0000                 12      JR  CDIR1
+       03BF                     C_DIR:
+0002BF 03BF CD9907          17      CALL    FILEC_D2
+0002C2 03C2 216F0A          10      LD  HL,FDRV+1
+0002C5 03C5 CD6207          17      CALL    CWILD1
+0002C8 03C8 3EF1             7      LD  A,0F1H
+0002CA 03CA 327B0A          13      LD  (FDRV+13),A
+0002CD 03CD CDDE01          17      CALL    OPEN1_D2
+       03D0                     CDIR1:
+0002D0 03D0 B7               4      OR  A
+0002D1 03D1 2008            12      JR  NZ,PDSKF
+0002D3 03D3 CD4704          17      CALL    P_NAME
+0002D6 03D6 CD5602          17      CALL    OPEN2_D2
+0002D9 03D9 18F5            12      JR  CDIR1
                                 
-       0000                     PDSKF:
-       0000                 13      LD  A,(FDRV)
-       0000                  4      LD  E,A
-       0000                  7      LD  C,01BH      ;(BDOS)ディスク情報の獲得
-       0000                 17      CALL    SYSTEM
-       0000                  4      LD  C,A     ;C←1クラスタ辺りの論理セクタ数
-       0000                  7      ADD A,001H
-       0000                 11      RET C       ;Aが0FFHだった場合
-       0000                  7      LD  A,8-2
-       0000                     PDS1:               ;HL=未使用クラスタの総数
-       0000                  4      INC A
-       0000                  8      RR  C
-       0000                 12      JR  NC,PDS1
-       0000                     PDS2:               ;B←論理セクタのサイズの上位8ビット
-       0000                  4      INC A
-       0000                  8      RR  B
-       0000                 12      JR  NC,PDS2
-       0000                  4      LD  B,A
+       03DB                     PDSKF:
+0002DB 03DB 3A6E0A          13      LD  A,(FDRV)
+0002DE 03DE 5F               4      LD  E,A
+0002DF 03DF 0E1B             7      LD  C,01BH      ;(BDOS)ディスク情報の獲得
+0002E1 03E1 CD0500          17      CALL    SYSTEM
+0002E4 03E4 4F               4      LD  C,A     ;C←1クラスタ辺りの論理セクタ数
+0002E5 03E5 C601             7      ADD A,001H
+0002E7 03E7 D8              11      RET C       ;Aが0FFHだった場合
+0002E8 03E8 3E06             7      LD  A,8-2
+       03EA                     PDS1:               ;HL=未使用クラスタの総数
+0002EA 03EA 3C               4      INC A
+0002EB 03EB CB19             8      RR  C
+0002ED 03ED 30FB            12      JR  NC,PDS1
+       03EF                     PDS2:               ;B←論理セクタのサイズの上位8ビット
+0002EF 03EF 3C               4      INC A
+0002F0 03F0 CB18             8      RR  B
+0002F2 03F2 30FB            12      JR  NC,PDS2
+0002F4 03F4 47               4      LD  B,A
                                 
-       0000                 10      LD  DE,0
-       0000                     PDS3:
-       0000                 11      ADD HL,HL
-       0000                  4      EX  DE,HL
-       0000                 15      ADC HL,HL
-       0000                  4      EX  DE,HL
-       0000                 13      DJNZ    PDS3
-       0000                     PDSKF1:
-       0000                 17      CALL    PRDEC_DEHL
-       0000                 10      LD  DE,FREE
-       0000                  7      LD  C,9     ;(BDOS)文字列出力
-       0000                 17      CALL    SYSTEM
-       0000                 17      CALL    PUTDRV
-       0000                  7      LD  A,05CH
-       0000                 17      CALL    MSG_A
-       0000                 13      LD  A,(MAJOR_VER)
-       0000                  7      CP  1
-       0000                 12      JR  C,LTNL
-       0000                 12      JR  NZ,PDSKF2
-       0000                 16      LD  HL,(FDRV+14)
-       0000                  4      XOR A
-       0000                 10      LD  DE,0-2
-       0000                 11      ADD HL,DE
-       0000                  6      INC HL
-       0000                 17      CALL    C,PRDEC_HL
-       0000                 12      JR  LTNL
-       0000                     PDSKF2:             ;MSX-DOS2
-       0000                 13      LD  A,(FDRV)
-       0000                  4      LD  B,A     ;ドライブ
-       0000                 10      LD  DE,DATA
-       0000                  7      LD  C,059H      ;(BDOS)GETCD カレントディレクトリの獲得
-       0000                 17      CALL    SYSTEM
-       0000                 10      LD  HL,SYSTEM
-       0000                 17      CALL    MSX
-       0000                 12      JR  LTNL
+0002F5 03F5 110000          10      LD  DE,0
+       03F8                     PDS3:
+0002F8 03F8 29              11      ADD HL,HL
+0002F9 03F9 EB               4      EX  DE,HL
+0002FA 03FA ED6A            15      ADC HL,HL
+0002FC 03FC EB               4      EX  DE,HL
+0002FD 03FD 10F9            13      DJNZ    PDS3
+       03FF                     PDSKF1:
+0002FF 03FF CDC004          17      CALL    PRDEC_DEHL
+000302 0402 11CF09          10      LD  DE,FREE
+000305 0405 0E09             7      LD  C,9     ;(BDOS)文字列出力
+000307 0407 CD0500          17      CALL    SYSTEM
+00030A 040A CDA004          17      CALL    PUTDRV
+00030D 040D 3E5C             7      LD  A,05CH
+00030F 040F CD8A07          17      CALL    MSG_A
+000312 0412 3AF609          13      LD  A,(MAJOR_VER)
+000315 0415 FE01             7      CP  1
+000317 0417 3856            12      JR  C,LTNL
+000319 0419 200E            12      JR  NZ,PDSKF2
+00031B 041B 2A7C0A          16      LD  HL,(FDRV+14)
+00031E 041E AF               4      XOR A
+00031F 041F 11FEFF          10      LD  DE,0-2
+000322 0422 19              11      ADD HL,DE
+000323 0423 23               6      INC HL
+000324 0424 DCBC04          17      CALL    C,PRDEC_HL
+000327 0427 1846            12      JR  LTNL
+       0429                     PDSKF2:             ;MSX-DOS2
+000329 0429 3A6E0A          13      LD  A,(FDRV)
+00032C 042C 47               4      LD  B,A     ;ドライブ
+00032D 042D 11950A          10      LD  DE,DATA
+000330 0430 0E59             7      LD  C,059H      ;(BDOS)GETCD カレントディレクトリの獲得
+000332 0432 CD0500          17      CALL    SYSTEM
+000335 0435 21950A          10      LD  HL,DATA
                                 
-       0000                     MSX1:
-       0000                  4      LD  E,A
-       0000                 17      CALL    _PRINT
-       0000                     MSX:
-       0000                  7      LD  A,(HL)
-       0000                  6      INC HL
-       0000                  4      OR  A
-       0000                 12      JR  NZ,MSX1
-       0000                 10      RET
+000338 0438 CD4104          17      CALL    MSX
+00033B 043B 1832            12      JR  LTNL
                                 
-       0000                     P_NAME:
-       0000                 10      LD  HL,DTA_CCP+1
-       0000                  7      LD  A,(HL)
-       0000                  7      CP  '.'
-       0000                 11      RET Z
-       0000                 17      CALL    FPRNT
-       0000                 13      LD  A,(DTA_CCP+13)
-       0000                  8      BIT 4,A
-       0000                 12      JR  Z,DIR3
-       0000                 10      LD  DE,DIRMES
-       0000                  7      LD  C,9     ;(BDOS)文字列出力
-       0000                 17      CALL    SYSTEM
-       0000                 12      JR  DIR6
-       0000                     DIR3:
-       0000                 20      LD  DE,(DTA_CCP+1+01EH)
-       0000                 16      LD  HL,(DTA_CCP+1+01CH)
-       0000                 17      CALL    PRDEC_DEHL
-       0000                     DIR6:
-       0000                 17      CALL    PRTTMS
+       043D                     MSX1:
+00033D 043D 5F               4      LD  E,A
+00033E 043E CD7D07          17      CALL    _PRINT
+       0441                     MSX:
+000341 0441 7E               7      LD  A,(HL)
+000342 0442 23               6      INC HL
+000343 0443 B7               4      OR  A
+000344 0444 20F7            12      JR  NZ,MSX1
+000346 0446 C9              10      RET
                                 
-       0000                     LTNL:
-       0000                  7      LD  E,00DH
-       0000                 17      CALL    _PRINT
-       0000                  7      LD  E,00AH
-       0000                 10      JP  _PRINT
+       0447                     P_NAME:
+000347 0447 213A0A          10      LD  HL,DTA_CCP+1
+00034A 044A 7E               7      LD  A,(HL)
+00034B 044B FE2E             7      CP  '.'
+00034D 044D C8              11      RET Z
+00034E 044E CD1605          17      CALL    FPRNT
+000351 0451 3A450A          13      LD  A,(DTA_CCP+12)
+000354 0454 CB67             8      BIT 4,A
+000356 0456 280A            12      JR  Z,DIR3
+000358 0458 11DD09          10      LD  DE,DIRMES
+00035B 045B 0E09             7      LD  C,9     ;(BDOS)文字列出力
+00035D 045D CD0500          17      CALL    SYSTEM
+000360 0460 180A            12      JR  DIR6
+       0462                     DIR3:
+000362 0462 ED5B580A        20      LD  DE,(DTA_CCP+1+01EH)
+000366 0466 2A560A          16      LD  HL,(DTA_CCP+1+01CH)
+000369 0469 CDC004          17      CALL    PRDEC_DEHL
+       046C                     DIR6:
+00036C 046C CD3805          17      CALL    PRTTMS
                                 
-       0000                     C_PATH:
-       0000                 13      LD  A,(IS_MSX)
-       0000                  4      OR  A
-       0000                 11      RET Z
-       0000                 17      CALL    SPCUT
-       0000                 10      LD  HL,PATHD
-       0000                  7      CP  021H
-       0000                 12      JR  NC,CPATH0
-       0000                     CPATHP:
-       0000                  7      LD  A,(HL)
-       0000                  6      INC HL
-       0000                  7      CP  020H
-       0000                  4      CCF
-       0000                 12      JR  NC,LTNL
-       0000                 17      CALL    MSG_A
-       0000                 12      JR  CPATHP
-       0000                     CPATH0:
-       0000                  7      CP  ';'
-       0000                 12      JR  NZ,CPATH1
-       0000                  6      INC DE
-       0000                     CPATH1:
-       0000                  4      EX  DE,HL
-       0000                 10      LD  BC,PATHX
-       0000                         LDIR
-       0000                 10      RET
+       046F                     LTNL:
+00036F 046F 1E0D             7      LD  E,00DH
+000371 0471 CD7D07          17      CALL    _PRINT
+000374 0474 1E0A             7      LD  E,00AH
+000376 0476 C37D07          10      JP  _PRINT
                                 
-       0000                     PUTDRV:
-       0000                 13      LD  A,(FDRV)
-       0000                  4      OR  A
-       0000                 12      JR  NZ,PUTDRV1
-       0000                 11      PUSH    BC
-       0000                 11      PUSH    DE
-       0000                 11      PUSH    HL
-       0000                  7      LD  C,019H
-       0000                 17      CALL    SYSTEM
-       0000                 10      POP HL
-       0000                 10      POP DE
-       0000                 10      POP BC
-       0000                  4      INC A
-       0000                     PUTDRV1:
-       0000                  7      ADD A,'A'-1
-       0000                 17      CALL    MSG_A
-       0000                  7      LD  A,':'
-       0000                     MSG_AR:
-       0000                 10      JP  MSG_A
+       0479                     C_PATH:
+000379 0479 3AF509          13      LD  A,(IS_MSX)
+00037C 047C B7               4      OR  A
+00037D 047D C8              11      RET Z
+00037E 047E CDA308          17      CALL    SPCUT
+000381 0481 2140F6          10      LD  HL,PATHD
+000384 0484 FE21             7      CP  021H
+000386 0486 300C            12      JR  NC,CPATH0
+       0488                     CPATHP:
+000388 0488 7E               7      LD  A,(HL)
+000389 0489 23               6      INC HL
+00038A 048A FE20             7      CP  020H
+00038C 048C 3F               4      CCF
+00038D 048D 30E0            12      JR  NC,LTNL
+00038F 048F CD8A07          17      CALL    MSG_A
+000392 0492 18F4            12      JR  CPATHP
+       0494                     CPATH0:
+000394 0494 FE3B             7      CP  ';'
+000396 0496 2001            12      JR  NZ,CPATH1
+000398 0498 13               6      INC DE
+       0499                     CPATH1:
+000399 0499 EB               4      EX  DE,HL
+00039A 049A 012000          10      LD  BC,PATHX
+00039D 049D EDB0                    LDIR
+00039F 049F C9              10      RET
                                 
-       0000                     PRDEC_HL:
-       0000                  4      XOR A
-       0000                     PRDEC_AHL:
-       0000                  4      LD  E,A
-       0000                  7      LD  D,0
-       0000                     PRDEC_DEHL:
-       0000                  7      LD  A,2
-       0000                 13      LD  (DEC6+1),A
-       0000                  4      XOR A
-       0000                 11      PUSH    HL
-       0000                 10      LD  HL,DECBF
-       0000                  7      LD  B,5
-       0000                 17      CALL    FILL_MEMORY
-       0000                 10      POP HL
+       04A0                     PUTDRV:
+0003A0 04A0 3A6E0A          13      LD  A,(FDRV)
+0003A3 04A3 B7               4      OR  A
+0003A4 04A4 200C            12      JR  NZ,PUTDRV1
+0003A6 04A6 C5              11      PUSH    BC
+0003A7 04A7 D5              11      PUSH    DE
+0003A8 04A8 E5              11      PUSH    HL
+0003A9 04A9 0E19             7      LD  C,019H
+0003AB 04AB CD0500          17      CALL    SYSTEM
+0003AE 04AE E1              10      POP HL
+0003AF 04AF D1              10      POP DE
+0003B0 04B0 C1              10      POP BC
+0003B1 04B1 3C               4      INC A
+       04B2                     PUTDRV1:
+0003B2 04B2 C640             7      ADD A,'A'-1
+0003B4 04B4 CD8A07          17      CALL    MSG_A
+0003B7 04B7 3E3A             7      LD  A,':'
+       04B9                     MSG_AR:
+0003B9 04B9 C38A07          10      JP  MSG_A
                                 
-       0000                  7      LD  C,32
-       0000                     DEC1:
-       0000                 11      ADD HL,HL
-       0000                  4      EX  DE,HL
-       0000                 15      ADC HL,HL
-       0000                  4      EX  DE,HL
-       0000                 11      PUSH    HL
-       0000                 10      LD  HL,DECBF+4
-       0000                  7      LD  B,5
-       0000                     DEC2:
-       0000                  7      LD  A,(HL)
-       0000                  4      ADC A,A
-       0000                  4      DAA
-       0000                  7      LD  (HL),A
-       0000                  6      DEC HL
-       0000                 13      DJNZ    DEC2
-       0000                 10      POP HL
-       0000                  4      DEC C
-       0000                 12      JR  NZ,DEC1
+       04BC                     PRDEC_HL:
+0003BC 04BC AF               4      XOR A
+       04BD                     PRDEC_AHL:
+0003BD 04BD 5F               4      LD  E,A
+0003BE 04BE 1600             7      LD  D,0
+       04C0                     PRDEC_DEHL:
+0003C0 04C0 3E02             7      LD  A,2
+0003C2 04C2 320B05          13      LD  (DEC6+1),A
+0003C5 04C5 AF               4      XOR A
+0003C6 04C6 E5              11      PUSH    HL
+0003C7 04C7 21690A          10      LD  HL,DECBF
+0003CA 04CA 0605             7      LD  B,5
+0003CC 04CC CD6A08          17      CALL    FILL_MEMORY
+0003CF 04CF E1              10      POP HL
                                 
-       0000                 10      LD  HL,DECBF
-       0000                  7      LD  A,020H
-       0000                  7      LD  B,4
-       0000                     DEC3:
-       0000                 17      CALL    DEC4
-       0000                 17      CALL    DEC4
-       0000                  6      INC HL
-       0000                 13      DJNZ    DEC3
-       0000                     DECX:
-       0000                 17      CALL    DEC4
-       0000                  4      XOR A
-       0000                     DEC4:
-       0000                 18      RLD
-       0000                  7      CP  020H
-       0000                 12      JR  Z,DEC6
-       0000                  7      OR  030H
-       0000                     DEC5:
-       0000                 12      JR  MSG_AR
-       0000                     DEC7:
-       0000                  7      LD  A,020H
-       0000                 12      JR  MSG_AR
-       0000                     DEC6:
-       0000                  7      LD  A,2
-       0000                  4      OR  A
-       0000                 12      JR  Z,DEC7
-       0000                  4      DEC A
-       0000                 13      LD  (DEC6+1),A
-       0000                  7      LD  A,020H
-       0000                 10      RET
+0003D0 04D0 0E20             7      LD  C,32
+       04D2                     DEC1:
+0003D2 04D2 29              11      ADD HL,HL
+0003D3 04D3 EB               4      EX  DE,HL
+0003D4 04D4 ED6A            15      ADC HL,HL
+0003D6 04D6 EB               4      EX  DE,HL
+0003D7 04D7 E5              11      PUSH    HL
+0003D8 04D8 216D0A          10      LD  HL,DECBF+4
+0003DB 04DB 0605             7      LD  B,5
+       04DD                     DEC2:
+0003DD 04DD 7E               7      LD  A,(HL)
+0003DE 04DE 8F               4      ADC A,A
+0003DF 04DF 27               4      DAA
+0003E0 04E0 77               7      LD  (HL),A
+0003E1 04E1 2B               6      DEC HL
+0003E2 04E2 10F9            13      DJNZ    DEC2
+0003E4 04E4 E1              10      POP HL
+0003E5 04E5 0D               4      DEC C
+0003E6 04E6 20EA            12      JR  NZ,DEC1
                                 
-       0000                     FPRNT:
-       0000                  7      LD  B,8
-       0000                 17      CALL    P_N1
-       0000                  7      LD  A,(HL)
-       0000                  7      ADD A,0A0H-020H
-       0000                  7      CP  0A0H
-       0000                 12      JR  Z,FPR1
-       0000                  7      LD  A,'.'
-       0000                     FPR1:
-       0000                 17      CALL    MSG_A
-       0000                  7      LD  B,3
+0003E8 04E8 21690A          10      LD  HL,DECBF
+0003EB 04EB 3E20             7      LD  A,020H
+0003ED 04ED 0604             7      LD  B,4
+       04EF                     DEC3:
+0003EF 04EF CDFC04          17      CALL    DEC4
+0003F2 04F2 CDFC04          17      CALL    DEC4
+0003F5 04F5 23               6      INC HL
+0003F6 04F6 10F7            13      DJNZ    DEC3
+       04F8                     DECX:
+0003F8 04F8 CDFC04          17      CALL    DEC4
+0003FB 04FB AF               4      XOR A
+       04FC                     DEC4:
+0003FC 04FC ED6F            18      RLD
+0003FE 04FE FE20             7      CP  020H
+000400 0500 2808            12      JR  Z,DEC6
+000402 0502 F630             7      OR  030H
+       0504                     DEC5:
+000404 0504 18B3            12      JR  MSG_AR
+       0506                     DEC7:
+000406 0506 3E20             7      LD  A,020H
+000408 0508 18AF            12      JR  MSG_AR
+       050A                     DEC6:
+00040A 050A 3E02             7      LD  A,2
+00040C 050C B7               4      OR  A
+00040D 050D 28F7            12      JR  Z,DEC7
+00040F 050F 3D               4      DEC A
+000410 0510 320B05          13      LD  (DEC6+1),A
+000413 0513 3E20             7      LD  A,020H
+000415 0515 C9              10      RET
                                 
-       0000                     P_N1:
-       0000                 11      PUSH    BC
-       0000                 11      PUSH    HL
-       0000                  7      LD  A,(HL)
-       0000                 17      CALL    CAP3
-       0000                 17      CALL    MSG_A
-       0000                 10      POP HL
-       0000                 10      POP BC
-       0000                  6      INC HL
-       0000                 13      DJNZ    P_N1
-       0000                 10      RET
+       0516                     FPRNT:
+000416 0516 0608             7      LD  B,8
+000418 0518 CD2905          17      CALL    P_N1
+00041B 051B 7E               7      LD  A,(HL)
+00041C 051C C680             7      ADD A,0A0H-020H
+00041E 051E FEA0             7      CP  0A0H
+000420 0520 2802            12      JR  Z,FPR1
+000422 0522 3E2E             7      LD  A,'.'
+       0524                     FPR1:
+000424 0524 CD8A07          17      CALL    MSG_A
+000427 0527 0603             7      LD  B,3
                                 
-       0000                     PRTTMS:
-       0000                  7      LD  A,020H
-       0000                 17      CALL    MSG_A
+       0529                     P_N1:
+000429 0529 C5              11      PUSH    BC
+00042A 052A E5              11      PUSH    HL
+00042B 052B 7E               7      LD  A,(HL)
+00042C 052C CDB508          17      CALL    CAP3
+00042F 052F CD8A07          17      CALL    MSG_A
+000432 0532 E1              10      POP HL
+000433 0533 C1              10      POP BC
+000434 0534 23               6      INC HL
+000435 0535 10F2            13      DJNZ    P_N1
+000437 0537 C9              10      RET
                                 
-       0000                 16      LD  HL,(DTA_CCP+1+24)
-       0000                  4      LD  A,L
-       0000                  4      OR  A
-       0000                 11      RET Z
-       0000                  8      SRL H
-       0000                  4      RLA
-       0000                  4      RLA
-       0000                  4      RLA
-       0000                  4      RLA
-       0000                  7      AND 00FH
-       0000                  4      LD  D,A
-       0000                  4      LD  A,H
-       0000                  7      ADD A,80
-       0000                 17      CALL    PRDEC_A
-       0000                  7      LD  A,'-'
-       0000                 17      CALL    MSG_A
-       0000                  4      LD  A,D
-       0000                 17      CALL    PRDEC_A
-       0000                  7      LD  A,'-'
-       0000                 17      CALL    MSG_A
-       0000                  4      LD  A,L
-       0000                  7      AND 01FH
-       0000                 17      CALL    PRDEC_A
+       0538                     PRTTMS:
+000438 0538 3E20             7      LD  A,020H
+00043A 053A CD8A07          17      CALL    MSG_A
                                 
-       0000                 17      CALL    GET_WIDTH
-       0000                  7      CP  32+1
-       0000                 12      JR  NC,SHOW_TIME
-       0000                  7      LD  A,01DH
-       0000                 10      JP  MSG_A
-       0000                     SHOW_TIME:
-       0000                 16      LD  HL,(DTA_CCP+1+22)
+00043D 053D 2A520A          16      LD  HL,(DTA_CCP+1+24)
+000440 0540 7D               4      LD  A,L
+000441 0541 B7               4      OR  A
+000442 0542 C8              11      RET Z
+000443 0543 CB3C             8      SRL H
+000445 0545 17               4      RLA
+000446 0546 17               4      RLA
+000447 0547 17               4      RLA
+000448 0548 17               4      RLA
+000449 0549 E60F             7      AND 00FH
+00044B 054B 57               4      LD  D,A
+00044C 054C 7C               4      LD  A,H
+00044D 054D C650             7      ADD A,80
+00044F 054F CDA005          17      CALL    PRDEC_A
+000452 0552 3E2D             7      LD  A,'-'
+000454 0554 CD8A07          17      CALL    MSG_A
+000457 0557 7A               4      LD  A,D
+000458 0558 CDA005          17      CALL    PRDEC_A
+00045B 055B 3E2D             7      LD  A,'-'
+00045D 055D CD8A07          17      CALL    MSG_A
+000460 0560 7D               4      LD  A,L
+000461 0561 E61F             7      AND 01FH
+000463 0563 CDA005          17      CALL    PRDEC_A
                                 
-       0000                  7      LD  A,020H
-       0000                 17      CALL    MSG_A
-       0000                  4      LD  A,H
-       0000                  4      LD  H,L
-       0000                  4      RRA
-       0000                  8      RR  L
-       0000                  4      RRA
-       0000                  8      RR  L
-       0000                  4      RRA
-       0000                  8      RR  L
-       0000                  7      AND 01FH
-       0000                 17      CALL    PRDEC_A
-       0000                  7      LD  A,':'
-       0000                 17      CALL    MSG_A
-       0000                  4      LD  A,L
-       0000                  4      RRCA
-       0000                  4      RRCA
-       0000                  7      AND 03FH
-       0000                 17      CALL    PRDEC_A
+000466 0566 CD5709          17      CALL    GET_WIDTH
+000469 0569 FE21             7      CP  32+1
+00046B 056B 3005            12      JR  NC,SHOW_TIME
+00046D 056D 3E1D             7      LD  A,01DH
+00046F 056F C38A07          10      JP  MSG_A
+       0572                     SHOW_TIME:
+000472 0572 2A500A          16      LD  HL,(DTA_CCP+1+22)
                                 
-       0000                  7      LD  A,':'
-       0000                 17      CALL    MSG_A
-       0000                  4      LD  A,H
-       0000                  7      AND 01FH
-       0000                  4      ADD A,A
+000475 0575 3E20             7      LD  A,020H
+000477 0577 CD8A07          17      CALL    MSG_A
+00047A 057A 7C               4      LD  A,H
+00047B 057B 65               4      LD  H,L
+00047C 057C 1F               4      RRA
+00047D 057D CB1D             8      RR  L
+00047F 057F 1F               4      RRA
+000480 0580 CB1D             8      RR  L
+000482 0582 1F               4      RRA
+000483 0583 CB1D             8      RR  L
+000485 0585 E61F             7      AND 01FH
+000487 0587 CDA005          17      CALL    PRDEC_A
+00048A 058A 3E3A             7      LD  A,':'
+00048C 058C CD8A07          17      CALL    MSG_A
+00048F 058F 7D               4      LD  A,L
+000490 0590 0F               4      RRCA
+000491 0591 0F               4      RRCA
+000492 0592 E63F             7      AND 03FH
+000494 0594 CDA005          17      CALL    PRDEC_A
+                                
+000497 0597 3E3A             7      LD  A,':'
+000499 0599 CD8A07          17      CALL    MSG_A
+00049C 059C 7C               4      LD  A,H
+00049D 059D E61F             7      AND 01FH
+00049F 059F 87               4      ADD A,A
                                 
                                 ;   PRINT10
                                 
-       0000                     PRDEC_A:
-       0000                 11      PUSH    HL
-       0000                  7      LD  B,8
-       0000                  4      LD  C,A
-       0000                  4      XOR A
-       0000                     PRTA1:
-       0000                  4      RLC C
-       0000                  4      ADC A,A
-       0000                  4      DAA
-       0000                 13      DJNZ    PRTA1
-       0000                 10      LD  HL,DECBF
-       0000                  7      LD  (HL),A
-       0000                  4      XOR A
-       0000                 17      CALL    DECX
-       0000                 10      POP HL
-       0000                 10      RET
+       05A0                     PRDEC_A:
+0004A0 05A0 E5              11      PUSH    HL
+0004A1 05A1 0608             7      LD  B,8
+0004A3 05A3 4F               4      LD  C,A
+0004A4 05A4 AF               4      XOR A
+       05A5                     PRTA1:
+0004A5 05A5 CB01             4      RLC C
+0004A7 05A7 8F               4      ADC A,A
+0004A8 05A8 27               4      DAA
+0004A9 05A9 10FA            13      DJNZ    PRTA1
+0004AB 05AB 21690A          10      LD  HL,DECBF
+0004AE 05AE 77               7      LD  (HL),A
+0004AF 05AF AF               4      XOR A
+0004B0 05B0 CDF804          17      CALL    DECX
+0004B3 05B3 E1              10      POP HL
+0004B4 05B4 C9              10      RET
                                 
-       0000                     SETFCB:
-       0000                 17      CALL    SPCUT
-       0000                  7      LD  A,(DE)
-       0000                  7      CP  020H
-       0000                 12      JR  C,SETFCBA
-       0000                  6      DEC DE
-       0000                     SETFCBA:
-       0000                 11      PUSH    DE
-       0000                 10      LD  HL,FCB1
-       0000                 10      LD  DE,FCB1+1
-       0000                 10      LD  BC,00023H
-       0000                  7      LD  (HL),B      ;B=0
-       0000                         LDIR
-       0000                 10      POP DE
-       0000                 11      PUSH    DE
-       0000                 10      LD  HL,FCB1
-       0000                 17      CALL    _SYS29      ;(BDOS)ファイル名の解析
-       0000                 10      LD  HL,FCB2
-       0000                 17      CALL    _SYS29      ;(BDOS)ファイル名の解析
-       0000                 10      POP HL
-       0000                 10      LD  BC,05000H
-       0000                 10      LD  DE,00081H
-       0000                     SETFCB1:
-       0000                  7      LD  A,(HL)
-       0000                  6      INC HL
-       0000                  7      CP  020H
-       0000                 12      JR  C,SETFCB2
-       0000                  7      LD  (DE),A
-       0000                  6      INC DE
-       0000                  4      INC C
-       0000                 13      DJNZ    SETFCB1
-       0000                     SETFCB2:
-       0000                  4      LD  A,C
-       0000                 13      LD  (DTA1),A
-       0000                  4      INC B
-       0000                  4      XOR A
-       0000                     SETFCB3:
-       0000                  7      LD  (DE),A
-       0000                  6      INC DE
-       0000                 13      DJNZ    SETFCB3
-       0000                 10      RET
+       05B5                     SETFCB:
+0004B5 05B5 CDA308          17      CALL    SPCUT
+0004B8 05B8 1A               7      LD  A,(DE)
+0004B9 05B9 FE20             7      CP  020H
+0004BB 05BB 3801            12      JR  C,SETFCBA
+0004BD 05BD 1B               6      DEC DE
+       05BE                     SETFCBA:
+0004BE 05BE D5              11      PUSH    DE
+0004BF 05BF 215C00          10      LD  HL,FCB1
+0004C2 05C2 115D00          10      LD  DE,FCB1+1
+0004C5 05C5 012300          10      LD  BC,00023H
+0004C8 05C8 70               7      LD  (HL),B      ;B=0
+0004C9 05C9 EDB0                    LDIR
+0004CB 05CB D1              10      POP DE
+0004CC 05CC D5              11      PUSH    DE
+0004CD 05CD 215C00          10      LD  HL,FCB1
+0004D0 05D0 CD3A09          17      CALL    _SYS29      ;(BDOS)ファイル名の解析
+0004D3 05D3 216C00          10      LD  HL,FCB2
+0004D6 05D6 CD3A09          17      CALL    _SYS29      ;(BDOS)ファイル名の解析
+0004D9 05D9 E1              10      POP HL
+0004DA 05DA 010050          10      LD  BC,05000H
+0004DD 05DD 118100          10      LD  DE,00081H
+       05E0                     SETFCB1:
+0004E0 05E0 7E               7      LD  A,(HL)
+0004E1 05E1 23               6      INC HL
+0004E2 05E2 FE20             7      CP  020H
+0004E4 05E4 3805            12      JR  C,SETFCB2
+0004E6 05E6 12               7      LD  (DE),A
+0004E7 05E7 13               6      INC DE
+0004E8 05E8 0C               4      INC C
+0004E9 05E9 10F5            13      DJNZ    SETFCB1
+       05EB                     SETFCB2:
+0004EB 05EB 79               4      LD  A,C
+0004EC 05EC 328000          13      LD  (DTA1),A
+0004EF 05EF 04               4      INC B
+0004F0 05F0 AF               4      XOR A
+       05F1                     SETFCB3:
+0004F1 05F1 12               7      LD  (DE),A
+0004F2 05F2 13               6      INC DE
+0004F3 05F3 10FC            13      DJNZ    SETFCB3
+0004F5 05F5 C9              10      RET
                                 
-       0000                     C_COPY:
-       0000                 17      CALL    SETFCB
-       0000                 10      LD  DE,DTA1+1
-       0000                  7      LD  C,'/'
-       0000                 17      CALL    SWITCH
-       0000                 17      CALL    CAP
-       0000                 13      LD  (SW+1),A
+       05F6                     C_COPY:
+0004F6 05F6 CDB505          17      CALL    SETFCB
+0004F9 05F9 118100          10      LD  DE,DTA1+1
+0004FC 05FC 0E2F             7      LD  C,'/'
+0004FE 05FE CD9503          17      CALL    SWITCH
+000501 0601 CDA908          17      CALL    CAP
+000504 0604 328E06          13      LD  (SW+1),A
                                 
-       0000                 10      LD  DE,ZERO
-       0000                 17      CALL    FILEC2
-       0000                 10      LD  HL,FCB2
-       0000                 17      CALL    S29X1
+000507 0607 11940A          10      LD  DE,ZERO
+00050A 060A CDBF07          17      CALL    FILEC2
+00050D 060D 216C00          10      LD  HL,FCB2
+000510 0610 CD4109          17      CALL    S29X1
                                 
-       0000                  7      LD  A,010H
-       0000                 13      LD  (FCB1+13),A
-       0000                 10      LD  HL,FCB2+1
-       0000                 17      CALL    CWILD1
-       0000                     COPY0:
-       0000                 17      CALL    CWILD
-       0000                 10      LD  HL,FCB1
-       0000                 17      CALL    OPEN
-       0000                  4      SCF
-       0000                     COPY1:
-       0000                 11      RET NZ
-       0000                 17      CALL    DEFCB
+000513 0613 3E10             7      LD  A,010H
+000515 0615 326900          13      LD  (FCB1+13),A
+000518 0618 216D00          10      LD  HL,FCB2+1
+00051B 061B CD6207          17      CALL    CWILD1
+       061E                     COPY0:
+00051E 061E CD5F07          17      CALL    CWILD
+000521 0621 215C00          10      LD  HL,FCB1
+000524 0624 CD4602          17      CALL    OPEN
+000527 0627 37               4      SCF
+       0628                     COPY1:
+000528 0628 C0              11      RET NZ
+000529 0629 CD6C02          17      CALL    DEFCB
                                 
-       0000                 13      LD  A,(DTA_CCP+13)
-       0000                  8      BIT 4,A
-       0000                 12      JR  Z,COPY1A
+00052C 062C 3A460A          13      LD  A,(DTA_CCP+13)
+00052F 062F CB67             8      BIT 4,A
+000531 0631 2826            12      JR  Z,COPY1A
                                 
-       0000                 10      LD  HL,FCB1+1
-       0000                 17      CALL    CHKWILD
-       0000                 12      JR  C,COPY9
+000533 0633 215D00          10      LD  HL,FCB1+1
+000536 0636 CDE208          17      CALL    CHKWILD
+000539 0639 3819            12      JR  C,COPY9
                                 
-       0000                  7      LD  A,020H
-       0000                 13      LD  (FCB1+1),A
-       0000                 16      LD  HL,(DTA_CCP+26)
-       0000                  6      INC HL
-       0000                 16      LD  (FCB1+14),HL
-       0000                 12      JR  COPY0
+00053B 063B 3E20             7      LD  A,020H
+00053D 063D 325D00          13      LD  (FCB1+1),A
+000540 0640 2A530A          16      LD  HL,(DTA_CCP+26)
+000543 0643 23               6      INC HL
+000544 0644 226A00          16      LD  (FCB1+14),HL
+000547 0647 18D5            12      JR  COPY0
                                 
-       0000                     COPYS:
-       0000                 10      LD  DE,SKIP
-       0000                     COPY8:
-       0000                  7      LD  C,9     ;(BDOS)文字列出力
-       0000                 17      CALL    SYSTEM
-       0000                 17      CALL    LTNL
-       0000                     COPY9:
-       0000                 17      CALL    OPEN2
-       0000                 12      JR  COPY1
+       0649                     COPYS:
+000549 0649 11E909          10      LD  DE,SKIP
+       064C                     COPY8:
+00054C 064C 0E09             7      LD  C,9     ;(BDOS)文字列出力
+00054E 064E CD0500          17      CALL    SYSTEM
+000551 0651 CD6F04          17      CALL    LTNL
+       0654                     COPY9:
+000554 0654 CD6802          17      CALL    OPEN2
+000557 0657 18CF            12      JR  COPY1
                                 
-       0000                     COPY1A:
-       0000                 10      LD  HL,FCB2
-       0000                 10      LD  DE,FDRV
-       0000                 10      LD  BC,DTA_CCP+2
-       0000                 16      LDI
-       0000                  7      LD  A,11
-       0000                     COPY2:
-       0000                 11      PUSH    AF
-       0000                  7      LD  A,(HL)
-       0000                  7      CP  '?'
-       0000                 12      JR  NZ,COPY3
-       0000                  7      LD  A,(BC)
-       0000                     COPY3:
-       0000                  7      LD  (DE),A
-       0000                  6      INC BC
-       0000                  6      INC DE
-       0000                  6      INC HL
-       0000                 10      POP AF
-       0000                  4      DEC A
-       0000                 12      JR  NZ,COPY2
-       0000                 10      LD  BC,16-11
-       0000                         LDIR
-       0000                     PUTNAME:
-       0000                 10      LD  HL,FCB1+1
-       0000                 17      CALL    CHKWILD
-       0000                 12      JR  NC,PUTN1
-       0000                 10      LD  HL,FDRV+1
-       0000                 17      CALL    FPRNT
-       0000                  7      LD  A,020H
-       0000                 17      CALL    MSG_A
-       0000                     PUTN1:
-       0000                  7  SW: LD  A,000H
-       0000                  7      CP  'T'
-       0000                 12      JR  NZ,CSW1
-       0000                 10      LD  HL,SWNE
-       0000                 12      JR  SWT1
-       0000                     CSW1:
-       0000                  7      CP  'N'
-       0000                 12      JR  NZ,SWNE
-       0000                 10      LD  HL,COPYS
-       0000                     SWT1:
-       0000                 10      LD  DE,FDRV
-       0000                 17      CALL    SYSC0F
-       0000                 12      JR  Z,SWN1
-       0000                  4      JP  (HL)
-       0000                     SWN1:
-       0000                 17      CALL    CTIME
-       0000                 12      JR  NC,COPYS
-       0000                     SWNE:
-       0000                 10      LD  DE,FDRV
-       0000                  7      LD  C,016H      ;(BDOS)ファイルの作成
-       0000                 17      CALL    SYSTEM0
-       0000                 12      JR  NZ,COPYE2
-       0000                  4      LD  H,A     ;A=0
-       0000                  4      LD  L,A
-       0000                 16      LD  (FDRV+33),HL    ;(FCB)ランダム・レコード
-       0000                 16      LD  (FDRV+35),HL
-       0000                  4      INC L       ;HL=1
-       0000                 16      LD  (FDRV+14),HL    ;(FCB)レコード・サイズ
-       0000                     COPY6:
-       0000                 17      CALL    BUFSIZ
-       0000                 17      CALL    S27DTA
-       0000                  4      INC A
-       0000                 12      JR  Z,COPYE
-       0000                  4      LD  B,A
-       0000                  4      LD  A,H
-       0000                  4      OR  L
-       0000                 12      JR  Z,COPY7
-       0000                 10      LD  DE,FDRV
-       0000                 11      PUSH    BC
-       0000                  7      LD  C,026H      ;(BDOS)ランダム・ブロック・ライト
-       0000                 17      CALL    SYSTEM
-       0000                 10      POP BC
-       0000                  4      OR  A
-       0000                 12      JR  NZ,COPYE
-       0000                 13      DJNZ    COPY6
-       0000                     COPY7:
-       0000                 13      LD  A,(DTA_CCP+13)  ;(FCB)属性(アトリビュート)
-       0000                 13      LD  (FDRV+13),A ;(FCB)属性(アトリビュート)
-       0000                 10      LD  HL,DTA_CCP+20
-       0000                 10      LD  DE,FDRV+20  ;(FCB)更新日時
-       0000                 10      LD  BC,4
-       0000                         LDIR
+       0659                     COPY1A:
+000559 0659 216C00          10      LD  HL,FCB2
+00055C 065C 116E0A          10      LD  DE,FDRV
+00055F 065F 013B0A          10      LD  BC,DTA_CCP+2
+000562 0662 EDA0            16      LDI
+000564 0664 3E0B             7      LD  A,11
+       0666                     COPY2:
+000566 0666 F5              11      PUSH    AF
+000567 0667 7E               7      LD  A,(HL)
+000568 0668 FE3F             7      CP  '?'
+00056A 066A 2001            12      JR  NZ,COPY3
+00056C 066C 0A               7      LD  A,(BC)
+       066D                     COPY3:
+00056D 066D 12               7      LD  (DE),A
+00056E 066E 03               6      INC BC
+00056F 066F 13               6      INC DE
+000570 0670 23               6      INC HL
+000571 0671 F1              10      POP AF
+000572 0672 3D               4      DEC A
+000573 0673 20F1            12      JR  NZ,COPY2
+000575 0675 010500          10      LD  BC,16-11
+000578 0678 EDB0                    LDIR
+       067A                     PUTNAME:
+00057A 067A 215D00          10      LD  HL,FCB1+1
+00057D 067D CDE208          17      CALL    CHKWILD
+000580 0680 300B            12      JR  NC,PUTN1
+000582 0682 216F0A          10      LD  HL,FDRV+1
+000585 0685 CD1605          17      CALL    FPRNT
+000588 0688 3E20             7      LD  A,020H
+00058A 068A CD8A07          17      CALL    MSG_A
+       068D                     PUTN1:
+00058D 068D 3E00             7  SW: LD  A,000H
+00058F 068F FE54             7      CP  'T'
+000591 0691 2005            12      JR  NZ,CSW1
+000593 0693 21AD06          10      LD  HL,SWNE
+000596 0696 1807            12      JR  SWT1
+       0698                     CSW1:
+000598 0698 FE4E             7      CP  'N'
+00059A 069A 2011            12      JR  NZ,SWNE
+00059C 069C 214906          10      LD  HL,COPYS
+       069F                     SWT1:
+00059F 069F 116E0A          10      LD  DE,FDRV
+0005A2 06A2 CD8F02          17      CALL    SYSC0F
+0005A5 06A5 2801            12      JR  Z,SWN1
+0005A7 06A7 E9               4      JP  (HL)
+       06A8                     SWN1:
+0005A8 06A8 CD0B07          17      CALL    CTIME
+0005AB 06AB 309C            12      JR  NC,COPYS
+       06AD                     SWNE:
+0005AD 06AD 116E0A          10      LD  DE,FDRV
+0005B0 06B0 0E16             7      LD  C,016H      ;(BDOS)ファイルの作成
+0005B2 06B2 CD9102          17      CALL    SYSTEM0
+0005B5 06B5 2052            12      JR  NZ,COPYE2
+0005B7 06B7 67               4      LD  H,A     ;A=0
+0005B8 06B8 6F               4      LD  L,A
+0005B9 06B9 228F0A          16      LD  (FDRV+33),HL    ;(FCB)ランダム・レコード
+0005BC 06BC 22910A          16      LD  (FDRV+35),HL
+0005BF 06BF 2C               4      INC L       ;HL=1
+0005C0 06C0 227C0A          16      LD  (FDRV+14),HL    ;(FCB)レコード・サイズ
+       06C3                     COPY6:
+0005C3 06C3 CD7107          17      CALL    BUFSIZ
+0005C6 06C6 CDA102          17      CALL    S27DTA
+0005C9 06C9 3C               4      INC A
+0005CA 06CA 2835            12      JR  Z,COPYE
+0005CC 06CC 47               4      LD  B,A
+0005CD 06CD 7C               4      LD  A,H
+0005CE 06CE B5               4      OR  L
+0005CF 06CF 280F            12      JR  Z,COPY7
+0005D1 06D1 116E0A          10      LD  DE,FDRV
+0005D4 06D4 C5              11      PUSH    BC
+0005D5 06D5 0E26             7      LD  C,026H      ;(BDOS)ランダム・ブロック・ライト
+0005D7 06D7 CD0500          17      CALL    SYSTEM
+0005DA 06DA C1              10      POP BC
+0005DB 06DB B7               4      OR  A
+0005DC 06DC 2023            12      JR  NZ,COPYE
+0005DE 06DE 10E3            13      DJNZ    COPY6
+       06E0                     COPY7:
+0005E0 06E0 3A460A          13      LD  A,(DTA_CCP+13)  ;(FCB)属性(アトリビュート)
+0005E3 06E3 327B0A          13      LD  (FDRV+13),A ;(FCB)属性(アトリビュート)
+0005E6 06E6 214D0A          10      LD  HL,DTA_CCP+20
+0005E9 06E9 11820A          10      LD  DE,FDRV+20  ;(FCB)更新日時
+0005EC 06EC 010400          10      LD  BC,4
+0005EF 06EF EDB0                    LDIR
                                 
-       0000                 10      LD  DE,FDRV
-       0000                  7      LD  C,010H      ;(BDOS)ファイルのクローズ
-       0000                 17      CALL    SYSTEM0
-       0000                 12      JR  NZ,COPYE
+0005F1 06F1 116E0A          10      LD  DE,FDRV
+0005F4 06F4 0E10             7      LD  C,010H      ;(BDOS)ファイルのクローズ
+0005F6 06F6 CD9102          17      CALL    SYSTEM0
+0005F9 06F9 2006            12      JR  NZ,COPYE
                                 
-       0000                 10      LD  DE,OK
-       0000                 10      JP  COPY8
+0005FB 06FB 11E609          10      LD  DE,OK
+0005FE 06FE C34C06          10      JP  COPY8
                                 
-       0000                     COPYE:
-       0000                 10      LD  DE,FDRV
-       0000                  7      LD  C,013H      ;(BDOS)ファイルの削除
-       0000                 17      CALL    SYSTEM
-       0000                     COPYE2:
-       0000                  4      SCF
-       0000                 10      RET
+       0701                     COPYE:
+000601 0701 116E0A          10      LD  DE,FDRV
+000604 0704 0E13             7      LD  C,013H      ;(BDOS)ファイルの削除
+000606 0706 CD0500          17      CALL    SYSTEM
+       0709                     COPYE2:
+000609 0709 37               4      SCF
+00060A 070A C9              10      RET
                                 
-       0000                     CTIME:
-       0000                 20      LD  DE,(DTA_CCP+20)
-       0000                 16      LD  HL,(FDRV+20)
-       0000                  4      AND A
-       0000                 15      SBC HL,DE
-       0000                 11      RET NZ
-       0000                 20      LD  DE,(DTA_CCP+22)
-       0000                 16      LD  HL,(FDRV+22)
-       0000                 15      SBC HL,DE
-       0000                 10      RET
+       070B                     CTIME:
+00060B 070B ED5B4D0A        20      LD  DE,(DTA_CCP+20)
+00060F 070F 2A820A          16      LD  HL,(FDRV+20)
+000612 0712 A7               4      AND A
+000613 0713 ED52            15      SBC HL,DE
+000615 0715 C0              11      RET NZ
+000616 0716 ED5B4F0A        20      LD  DE,(DTA_CCP+22)
+00061A 071A 2A840A          16      LD  HL,(FDRV+22)
+00061D 071D ED52            15      SBC HL,DE
+00061F 071F C9              10      RET
                                 
-       0000                     C_TYPE:
-       0000                 17      CALL    SETFCB
-       0000                 10      LD  HL,FCB1
-       0000                 17      CALL    OPEN
-       0000                  4      SCF
-       0000                     TYPE1:
-       0000                 11      RET NZ
-       0000                 17      CALL    DEFCB
-       0000                  7      LD  A,01AH
-       0000                 17      CALL    MSG_A
-       0000                     TYPE2:
-       0000                 17      CALL    BUFSIZ
-       0000                 17      CALL    S27DTA
-       0000                  7      ADD A,0FEH
-       0000                 11      RET C
-       0000                  4      LD  A,H
-       0000                  4      OR  L
-       0000                 12      JR  Z,TYPEE
-       0000                 10      LD  BC,DATA
-       0000                     TYPE3:
-       0000                  7      LD  A,(BC)
-       0000                  6      INC BC
-       0000                  7      CP  01AH
-       0000                 12      JR  Z,TYPEE
-       0000                  4      LD  E,A
-       0000                 11      PUSH    BC
-       0000                 11      PUSH    HL
-       0000                  7      LD  C,2     ;(BDOS)コンソール出力
-       0000                 17      CALL    SYSTEM
-       0000                 10      POP HL
-       0000                 10      POP BC
-       0000                  6      DEC HL
-       0000                  4      LD  A,H
-       0000                  4      OR  L
-       0000                 12      JR  NZ,TYPE3
-       0000                 12      JR  TYPE2
-       0000                     TYPEE:
-       0000                 17      CALL    OPEN2
-       0000                 12      JR  TYPE1
+       0720                     C_TYPE:
+000620 0720 CDB505          17      CALL    SETFCB
+000623 0723 215C00          10      LD  HL,FCB1
+000626 0726 CD4602          17      CALL    OPEN
+000629 0729 37               4      SCF
+       072A                     TYPE1:
+00062A 072A C0              11      RET NZ
+00062B 072B CD6C02          17      CALL    DEFCB
+00062E 072E 3E1A             7      LD  A,01AH
+000630 0730 CD8A07          17      CALL    MSG_A
+       0733                     TYPE2:
+000633 0733 CD7107          17      CALL    BUFSIZ
+000636 0736 CDA102          17      CALL    S27DTA
+000639 0739 C6FE             7      ADD A,0FEH
+00063B 073B D8              11      RET C
+00063C 073C 7C               4      LD  A,H
+00063D 073D B5               4      OR  L
+00063E 073E 281A            12      JR  Z,TYPEE
+000640 0740 01950A          10      LD  BC,DATA
+       0743                     TYPE3:
+000643 0743 0A               7      LD  A,(BC)
+000644 0744 03               6      INC BC
+000645 0745 FE1A             7      CP  01AH
+000647 0747 2811            12      JR  Z,TYPEE
+000649 0749 5F               4      LD  E,A
+00064A 074A C5              11      PUSH    BC
+00064B 074B E5              11      PUSH    HL
+00064C 074C 0E02             7      LD  C,2     ;(BDOS)コンソール出力
+00064E 074E CD0500          17      CALL    SYSTEM
+000651 0751 E1              10      POP HL
+000652 0752 C1              10      POP BC
+000653 0753 2B               6      DEC HL
+000654 0754 7C               4      LD  A,H
+000655 0755 B5               4      OR  L
+000656 0756 20EB            12      JR  NZ,TYPE3
+000658 0758 18D9            12      JR  TYPE2
+       075A                     TYPEE:
+00065A 075A CD6802          17      CALL    OPEN2
+00065D 075D 18CB            12      JR  TYPE1
                                 
-       0000                     CWILD:
-       0000                 10      LD  HL,FCB1+1
-       0000                     CWILD1:
-       0000                  7      LD  A,(HL)
-       0000                  7      CP  020H
-       0000                 11      RET NZ
-       0000                     CWILD2:
-       0000                  4      LD  D,H
-       0000                  4      LD  E,L
-       0000                  6      INC DE
-       0000                 10      LD  BC,10
-       0000                 10      LD  (HL),'?'
-       0000                         LDIR
-       0000                 10      RET
+       075F                     CWILD:
+00065F 075F 215D00          10      LD  HL,FCB1+1
+       0762                     CWILD1:
+000662 0762 7E               7      LD  A,(HL)
+000663 0763 FE20             7      CP  020H
+000665 0765 C0              11      RET NZ
+       0766                     CWILD2:
+000666 0766 54               4      LD  D,H
+000667 0767 5D               4      LD  E,L
+000668 0768 13               6      INC DE
+000669 0769 010A00          10      LD  BC,10
+00066C 076C 363F            10      LD  (HL),'?'
+00066E 076E EDB0                    LDIR
+000670 0770 C9              10      RET
                                 
-       0000                     BUFSIZ:
-       0000                 13      LD  A,(SYSTEM+2)
-       0000                  7      SUB (DATA/256)+1
-       0000                  7      AND 0F8H
-       0000                  4      LD  H,A
-       0000                  7      LD  L,0
-       0000                 10      RET
+       0771                     BUFSIZ:
+000671 0771 3A0700          13      LD  A,(SYSTEM+2)
+000674 0774 D60B             7      SUB (DATA/256)+1
+000676 0776 E6F8             7      AND 0F8H
+000678 0778 67               4      LD  H,A
+000679 0779 2E00             7      LD  L,0
+00067B 077B C9              10      RET
                                 
-       0000                  4  JP_HL:  JP  (HL)
+00067C 077C E9               4  JP_HL:  JP  (HL)
                                 
-       0000                     _PRINT:
-       0000                 11      PUSH    BC
-       0000                 11      PUSH    DE
-       0000                 11      PUSH    HL
-       0000                  7      LD  C,6
-       0000                 17      CALL    SYSTEM
-       0000                 10      POP HL
-       0000                 10      POP DE
-       0000                 10      POP BC
-       0000                  4      OR  A
-       0000                 10      RET
+       077D                     _PRINT:
+00067D 077D C5              11      PUSH    BC
+00067E 077E D5              11      PUSH    DE
+00067F 077F E5              11      PUSH    HL
+000680 0780 0E06             7      LD  C,6
+000682 0782 CD0500          17      CALL    SYSTEM
+000685 0785 E1              10      POP HL
+000686 0786 D1              10      POP DE
+000687 0787 C1              10      POP BC
+000688 0788 B7               4      OR  A
+000689 0789 C9              10      RET
                                 
-       0000                     MSG_A:
-       0000                 11      PUSH    AF
-       0000                 11      PUSH    BC
-       0000                 11      PUSH    DE
-       0000                 11      PUSH    HL
-       0000                  4      LD  E,A
-       0000                  7      LD  C,2
-       0000                 17      CALL    SYSTEM
-       0000                 10      POP HL
-       0000                 10      POP DE
-       0000                 10      POP BC
-       0000                 10      POP AF
-       0000                 10      RET
+       078A                     MSG_A:
+00068A 078A F5              11      PUSH    AF
+00068B 078B C5              11      PUSH    BC
+00068C 078C D5              11      PUSH    DE
+00068D 078D E5              11      PUSH    HL
+00068E 078E 5F               4      LD  E,A
+00068F 078F 0E02             7      LD  C,2
+000691 0791 CD0500          17      CALL    SYSTEM
+000694 0794 E1              10      POP HL
+000695 0795 D1              10      POP DE
+000696 0796 C1              10      POP BC
+000697 0797 F1              10      POP AF
+000698 0798 C9              10      RET
                                 ;       FILE
-       0000                     FILEC:
-       0000                 17      CALL    FILE
-       0000                     FILEC2:
-       0000                 13      LD  A,(FDRV+1)
-       0000                  7      CP  020H
-       0000                 11      RET Z
-       0000                 12      JR  SETDIR1
+       0799                     FILEC_D2:       ;DOS2対応
+000699 0799 3AF609          13      LD  A,(MAJOR_VER)
+00069C 079C FE02             7      CP  2
+00069E 079E 381C            12      JR  C,FILEC
+0006A0 07A0 C5              11      PUSH    BC
+0006A1 07A1 D5              11      PUSH    DE
+0006A2 07A2 E5              11      PUSH    HL
+0006A3 07A3 CDA308          17      CALL    SPCUT
+0006A6 07A6 21F909          10      LD  HL,PATH_CCP
+0006A9 07A9 0640             7      LD  B,64
+       07AB                     PATHCD1:
+0006AB 07AB 1A               7      LD  A,(DE)
+0006AC 07AC 13               6      INC DE
+0006AD 07AD FE20             7      CP  020H
+0006AF 07AF 3002            12      JR  NC,PATHCD2
+0006B1 07B1 3E00             7      LD  A,0
+       07B3                     PATHCD2:
+0006B3 07B3 77               7      LD  (HL),A
+0006B4 07B4 3803            12      JR  C,PATHCD3
+0006B6 07B6 23               6      INC HL
+0006B7 07B7 10F2            13      DJNZ    PATHCD1
+       07B9                     PATHCD3:
+0006B9 07B9 E1              10      POP HL
+0006BA 07BA D1              10      POP DE
+0006BB 07BB C1              10      POP BC
+       07BC                     FILEC:
+0006BC 07BC CDC707          17      CALL    FILE
+       07BF                     FILEC2:
+0006BF 07BF 3A6F0A          13      LD  A,(FDRV+1)
+0006C2 07C2 FE20             7      CP  020H
+0006C4 07C4 C8              11      RET Z
+0006C5 07C5 1839            12      JR  SETDIR1
                                 
-       0000                     FILE:
-       0000                  4      XOR A
-       0000                 13      LD  (FDRV),A
-       0000                  4      LD  H,A
-       0000                  4      LD  L,A
-       0000                 16      LD  (FDRV+14),HL
-       0000                 17      CALL    SPCUT
-       0000                 17      CALL    CCHK3
-       0000                 12      JR  Z,DEVI1
-       0000                  6      INC DE
-       0000                  7      LD  A,(DE)
-       0000                  6      DEC DE
-       0000                  7      CP  ':'
-       0000                 12      JR  NZ,DEVI1
-       0000                  7      LD  A,(DE)      ;DRIVE
-       0000                 17      CALL    CAP
-       0000                  7      SUB '@'
-       0000                  6      INC DE
-       0000                  6      INC DE
-       0000                 13      LD  (FDRV),A
-       0000                     DEVI1:
-       0000                  7      LD  A,(DE)
-       0000                  7      SUB 05CH        ;\
-       0000                 12      JR  NZ,NOROOT
-       0000                  4      LD  L,A     ;A=0でH=0のはずなのでHL=0
-       0000                 16      LD  (FDRV+26),HL
-       0000                  4      INC L
-       0000                 16      LD  (FDRV+14),HL
-       0000                  6      INC DE
-       0000                     NOROOT:
+       07C7                     FILE:
+0006C7 07C7 AF               4      XOR A
+0006C8 07C8 326E0A          13      LD  (FDRV),A
+0006CB 07CB 67               4      LD  H,A
+0006CC 07CC 6F               4      LD  L,A
+0006CD 07CD 227C0A          16      LD  (FDRV+14),HL
+0006D0 07D0 CDA308          17      CALL    SPCUT
+0006D3 07D3 CD8808          17      CALL    CCHK3
+0006D6 07D6 2812            12      JR  Z,DEVI1
+0006D8 07D8 13               6      INC DE
+0006D9 07D9 1A               7      LD  A,(DE)
+0006DA 07DA 1B               6      DEC DE
+0006DB 07DB FE3A             7      CP  ':'
+0006DD 07DD 200B            12      JR  NZ,DEVI1
+0006DF 07DF 1A               7      LD  A,(DE)      ;DRIVE
+0006E0 07E0 CDA908          17      CALL    CAP
+0006E3 07E3 D640             7      SUB '@'
+0006E5 07E5 13               6      INC DE
+0006E6 07E6 13               6      INC DE
+0006E7 07E7 326E0A          13      LD  (FDRV),A
+       07EA                     DEVI1:
+0006EA 07EA 1A               7      LD  A,(DE)
+0006EB 07EB D65C             7      SUB 05CH        ;\
+0006ED 07ED 2009            12      JR  NZ,NOROOT
+0006EF 07EF 6F               4      LD  L,A     ;A=0でH=0のはずなのでHL=0
+0006F0 07F0 22880A          16      LD  (FDRV+26),HL
+0006F3 07F3 2C               4      INC L
+0006F4 07F4 227C0A          16      LD  (FDRV+14),HL
+0006F7 07F7 13               6      INC DE
+       07F8                     NOROOT:
                                 
-       0000                     SETDIR:
-       0000                 17      CALL    FILED
-       0000                  7      LD  A,(DE)
-       0000                  7      CP  05CH        ;\
-       0000                 11      RET NZ
-       0000                  6      INC DE
-       0000                     SETDIR1:
-       0000                 13      LD  A,(IS_MSX)
-       0000                  4      OR  A
-       0000                 11      RET NZ
+       07F8                     SETDIR:
+0006F8 07F8 CD2808          17      CALL    FILED
+0006FB 07FB 1A               7      LD  A,(DE)
+0006FC 07FC FE5C             7      CP  05CH        ;\
+0006FE 07FE C0              11      RET NZ
+0006FF 07FF 13               6      INC DE
+       0800                     SETDIR1:
+000700 0800 3AF509          13      LD  A,(IS_MSX)
+000703 0803 B7               4      OR  A
+000704 0804 C0              11      RET NZ
                                                 ;for LSX-Dodgers
-       0000                  7      LD  A,010H      ;Directory
-       0000                 13      LD  (FDRV+13),A
-       0000                 11      PUSH    DE
-       0000                 10      LD  DE,FDRV
-       0000                  7      LD  C,00FH
-       0000                 17      CALL    SYSTEM
-       0000                 10      POP DE
-       0000                  4      OR  A
-       0000                 11      RET NZ
+000705 0805 3E10             7      LD  A,010H      ;Directory
+000707 0807 327B0A          13      LD  (FDRV+13),A
+00070A 080A D5              11      PUSH    DE
+00070B 080B 116E0A          10      LD  DE,FDRV
+00070E 080E 0E0F             7      LD  C,00FH
+000710 0810 CD0500          17      CALL    SYSTEM
+000713 0813 D1              10      POP DE
+000714 0814 B7               4      OR  A
+000715 0815 C0              11      RET NZ
                                 
-       0000                 13      LD  A,(FDRV+13)
-       0000                  8      BIT 4,A
-       0000                 11      RET Z
+000716 0816 3A7B0A          13      LD  A,(FDRV+13)
+000719 0819 CB67             8      BIT 4,A
+00071B 081B C8              11      RET Z
                                 
-       0000                 17      CALL    FILEI
-       0000                 16      LD  HL,(FDRV+26)
-       0000                  6      INC HL
-       0000                 16      LD  (FDRV+14),HL
-       0000                 12      JR  SETDIR
+00071C 081C CD6F08          17      CALL    FILEI
+00071F 081F 2A880A          16      LD  HL,(FDRV+26)
+000722 0822 23               6      INC HL
+000723 0823 227C0A          16      LD  (FDRV+14),HL
+000726 0826 18D0            12      JR  SETDIR
                                 
-       0000                     FILED:
-       0000                 17      CALL    FILEI
+       0828                     FILED:
+000728 0828 CD6F08          17      CALL    FILEI
                                 
-       0000                  7      LD  B,8
-       0000                     FILE2:
-       0000                 17      CALL    CCHKF
-       0000                 11      RET Z
-       0000                  7      CP  '*'
-       0000                 12      JR  Z,FILE9
-       0000                  7      CP  '.'
-       0000                 12      JR  Z,FILE4
-       0000                  7      LD  (HL),A
-       0000                  6      INC HL
-       0000                 13      DJNZ    FILE2
+00072B 082B 0608             7      LD  B,8
+       082D                     FILE2:
+00072D 082D CD7D08          17      CALL    CCHKF
+000730 0830 C8              11      RET Z
+000731 0831 FE2A             7      CP  '*'
+000733 0833 282E            12      JR  Z,FILE9
+000735 0835 FE2E             7      CP  '.'
+000737 0837 280C            12      JR  Z,FILE4
+000739 0839 77               7      LD  (HL),A
+00073A 083A 23               6      INC HL
+00073B 083B 10F0            13      DJNZ    FILE2
                                 
-       0000                     FILE3:
-       0000                 17      CALL    CCHKF
-       0000                 11      RET Z
-       0000                  7      CP  '.'
-       0000                 12      JR  NZ,FILE3
+       083D                     FILE3:
+00073D 083D CD7D08          17      CALL    CCHKF
+000740 0840 C8              11      RET Z
+000741 0841 FE2E             7      CP  '.'
+000743 0843 20F8            12      JR  NZ,FILE3
                                 
-       0000                     FILE4:
-       0000                 10      LD  HL,FNAME+8
-       0000                  7      LD  B,3
+       0845                     FILE4:
+000745 0845 21770A          10      LD  HL,FNAME+8
+000748 0848 0603             7      LD  B,3
                                 
-       0000                     FILE4L:
-       0000                 17      CALL    CCHKF
-       0000                 11      RET Z
-       0000                  7      CP  '.'
-       0000                 12      JR  NZ,FILE12
-       0000                 13      LD  (FNAME),A   ;Parent directory(..)
-       0000                 13      LD  (FNAME+1),A
-       0000                  7      LD  A,020H
-       0000                     FILE12:
-       0000                  7      CP  '*'
-       0000                 12      JR  Z,FILE10
-       0000                  7      LD  (HL),A
-       0000                  6      INC HL
-       0000                 13      DJNZ    FILE4L
-       0000                 10      RET
+       084A                     FILE4L:
+00074A 084A CD7D08          17      CALL    CCHKF
+00074D 084D C8              11      RET Z
+00074E 084E FE2E             7      CP  '.'
+000750 0850 2008            12      JR  NZ,FILE12
+000752 0852 326F0A          13      LD  (FNAME),A   ;Parent directory(..)
+000755 0855 32700A          13      LD  (FNAME+1),A
+000758 0858 3E20             7      LD  A,020H
+       085A                     FILE12:
+00075A 085A FE2A             7      CP  '*'
+00075C 085C 280A            12      JR  Z,FILE10
+00075E 085E 77               7      LD  (HL),A
+00075F 085F 23               6      INC HL
+000760 0860 10E8            13      DJNZ    FILE4L
+000762 0862 C9              10      RET
                                 
-       0000                     FILE9:              ;名前の*処理、名前の残りを?で埋める
-       0000                 17      CALL    FILE10
-       0000                 12      JR  FILE3
+       0863                     FILE9:              ;名前の*処理、名前の残りを?で埋める
+000763 0863 CD6808          17      CALL    FILE10
+000766 0866 18D5            12      JR  FILE3
                                 
-       0000                     FILE10:
-       0000                  7      LD  A,'?'
+       0868                     FILE10:
+000768 0868 3E3F             7      LD  A,'?'
                                 
-       0000                     FILL_MEMORY:                ;HLからBバイトAで埋める
-       0000                  7      LD  (HL),A
-       0000                  6      INC HL
-       0000                 13      DJNZ    FILL_MEMORY
-       0000                 10      RET
+       086A                     FILL_MEMORY:                ;HLからBバイトAで埋める
+00076A 086A 77               7      LD  (HL),A
+00076B 086B 23               6      INC HL
+00076C 086C 10FC            13      DJNZ    FILL_MEMORY
+00076E 086E C9              10      RET
                                 
-       0000                     FILEI:              ;名前＋拡張子をスペースで初期化
-       0000                  7      LD  A,020H
-       0000                 10      LD  BC,11*256
-       0000                 10      LD  HL,FNAME
-       0000                 11      PUSH    HL
-       0000                 17      CALL    FILL_MEMORY
-       0000                 10      POP HL
-       0000                 10      RET
+       086F                     FILEI:              ;名前＋拡張子をスペースで初期化
+00076F 086F 3E20             7      LD  A,020H
+000771 0871 01000B          10      LD  BC,11*256
+000774 0874 216F0A          10      LD  HL,FNAME
+000777 0877 E5              11      PUSH    HL
+000778 0878 CD6A08          17      CALL    FILL_MEMORY
+00077B 087B E1              10      POP HL
+00077C 087C C9              10      RET
                                 
-       0000                     CCHKF:
-       0000                  7      LD  A,(DE)
-       0000                 17      CALL    CCHK2
-       0000                 11      RET Z
-       0000                 10      JP  FKAN
+       087D                     CCHKF:
+00077D 087D 1A               7      LD  A,(DE)
+00077E 087E CD8508          17      CALL    CCHK2
+000781 0881 C8              11      RET Z
+000782 0882 C3CB08          10      JP  FKAN
                                 
-       0000                     CCHK2:
-       0000                  4      INC C
-       0000                  4      DEC C
-       0000                 11      RET NZ
-       0000                     CCHK3:              ;ZF=1 で使えない文字
-       0000                  7      CP  '+'
-       0000                 11      RET Z
-       0000                  7      CP  ','
-       0000                 11      RET Z
-       0000                  7      CP  '/'
-       0000                 11      RET Z
-       0000                  7      CP  ':'
-       0000                 11      RET Z
-       0000                  7      CP  ';'
-       0000                 11      RET Z
-       0000                  7      CP  '='
-       0000                 11      RET Z
-       0000                  7      CP  05CH    ;\
-       0000                 11      RET Z
-       0000                  7      CP  020H
-       0000                 11      RET NC
-       0000                  4      CP  A       ;Z=1
-       0000                 10      RET
+       0885                     CCHK2:
+000785 0885 0C               4      INC C
+000786 0886 0D               4      DEC C
+000787 0887 C0              11      RET NZ
+       0888                     CCHK3:              ;ZF=1 で使えない文字
+000788 0888 FE2B             7      CP  '+'
+00078A 088A C8              11      RET Z
+00078B 088B FE2C             7      CP  ','
+00078D 088D C8              11      RET Z
+00078E 088E FE2F             7      CP  '/'
+000790 0890 C8              11      RET Z
+000791 0891 FE3A             7      CP  ':'
+000793 0893 C8              11      RET Z
+000794 0894 FE3B             7      CP  ';'
+000796 0896 C8              11      RET Z
+000797 0897 FE3D             7      CP  '='
+000799 0899 C8              11      RET Z
+00079A 089A FE5C             7      CP  05CH    ;\
+00079C 089C C8              11      RET Z
+00079D 089D FE20             7      CP  020H
+00079F 089F D0              11      RET NC
+0007A0 08A0 BF               4      CP  A       ;Z=1
+0007A1 08A1 C9              10      RET
                                 
-       0000                     SS1:
-       0000                  6      INC DE
-       0000                     SPCUT:              ;スペースをカット
-       0000                  7      LD  A,(DE)
-       0000                  7      CP  020H
-       0000                 12      JR  Z,SS1
-       0000                 10      RET
+       08A2                     SS1:
+0007A2 08A2 13               6      INC DE
+       08A3                     SPCUT:              ;スペースをカット
+0007A3 08A3 1A               7      LD  A,(DE)
+0007A4 08A4 FE20             7      CP  020H
+0007A6 08A6 28FA            12      JR  Z,SS1
+0007A8 08A8 C9              10      RET
                                 
-       0000                     CAP:
-       0000                  7      CP  'a'
-       0000                 11      RET C
-       0000                  7      CP  'z'+1
-       0000                 11      RET NC
-       0000                  7      SUB 020H
-       0000                 10      RET
-       0000                     CAP2:
-       0000                 17      CALL    CAP
-       0000                     CAP3:
-       0000                 17      CALL    CAP4
-       0000                  7      CP  021H
-       0000                 11      RET NC
-       0000                  7      LD  A,020H
-       0000                 10      RET
-       0000                     CAP4:
-       0000                  7      CP  5
-       0000                 11      RET NZ
-       0000                  7      LD  A,0E5H
-       0000                 10      RET
+       08A9                     CAP:
+0007A9 08A9 FE61             7      CP  'a'
+0007AB 08AB D8              11      RET C
+0007AC 08AC FE7B             7      CP  'z'+1
+0007AE 08AE D0              11      RET NC
+0007AF 08AF D620             7      SUB 020H
+0007B1 08B1 C9              10      RET
+       08B2                     CAP2:
+0007B2 08B2 CDA908          17      CALL    CAP
+       08B5                     CAP3:
+0007B5 08B5 CDBE08          17      CALL    CAP4
+0007B8 08B8 FE21             7      CP  021H
+0007BA 08BA D0              11      RET NC
+0007BB 08BB 3E20             7      LD  A,020H
+0007BD 08BD C9              10      RET
+       08BE                     CAP4:
+0007BE 08BE FE05             7      CP  5
+0007C0 08C0 C0              11      RET NZ
+0007C1 08C1 3EE5             7      LD  A,0E5H
+0007C3 08C3 C9              10      RET
                                 
-       0000                     FKANC:
-       0000                  8      BIT 0,C
-       0000                 17      CALL    Z,CAP2
-       0000                 12      JR  FKANX
-       0000                     FKAN:           ;漢字チェック
-       0000                  6      INC DE
-       0000                     FKANX:
-       0000                  8      BIT 0,C
-       0000                  8      RES 0,C
-       0000                 11      RET NZ
-       0000                  7      CP  080H
-       0000                 11      RET C
-       0000                  7      CP  0A0H
-       0000                 12      JR  C,FKAN1
-       0000                  7      CP  0E0H
-       0000                 11      RET C
-       0000                     FKAN1:
-       0000                  4      INC C
-       0000                  4      AND A
-       0000                 10      RET
+       08C4                     FKANC:
+0007C4 08C4 CB41             8      BIT 0,C
+0007C6 08C6 CCB208          17      CALL    Z,CAP2
+0007C9 08C9 1801            12      JR  FKANX
+       08CB                     FKAN:           ;漢字チェック
+0007CB 08CB 13               6      INC DE
+       08CC                     FKANX:
+0007CC 08CC CB41             8      BIT 0,C
+0007CE 08CE CB81             8      RES 0,C
+0007D0 08D0 C0              11      RET NZ
+0007D1 08D1 FE80             7      CP  080H
+0007D3 08D3 D8              11      RET C
+0007D4 08D4 FEA0             7      CP  0A0H
+0007D6 08D6 3803            12      JR  C,FKAN1
+0007D8 08D8 FEE0             7      CP  0E0H
+0007DA 08DA D8              11      RET C
+       08DB                     FKAN1:
+0007DB 08DB 0C               4      INC C
+0007DC 08DC A7               4      AND A
+0007DD 08DD C9              10      RET
                                 
-       0000                     CHKWILDX:
-       0000                 15      PUSH    IY
-       0000                 10      POP HL
-       0000                  6      INC HL
-       0000                     CHKWILD:
-       0000                  7      LD  B,11
-       0000                  7      LD  A,'?'
-       0000                     CHKWIL1:
-       0000                  7      CP  (HL)
-       0000                  6      INC HL
-       0000                  4      SCF
-       0000                 11      RET Z
-       0000                 13      DJNZ    CHKWIL1
-       0000                  4      XOR A
-       0000                 10      RET
+       08DE                     CHKWILDX:
+0007DE 08DE FDE5            15      PUSH    IY
+0007E0 08E0 E1              10      POP HL
+0007E1 08E1 23               6      INC HL
+       08E2                     CHKWILD:
+0007E2 08E2 060B             7      LD  B,11
+0007E4 08E4 3E3F             7      LD  A,'?'
+       08E6                     CHKWIL1:
+0007E6 08E6 BE               7      CP  (HL)
+0007E7 08E7 23               6      INC HL
+0007E8 08E8 37               4      SCF
+0007E9 08E9 C8              11      RET Z
+0007EA 08EA 10FA            13      DJNZ    CHKWIL1
+0007EC 08EC AF               4      XOR A
+0007ED 08ED C9              10      RET
                                 
-       0000                     CPNAME:
-       0000                 11      PUSH    BC
-       0000                 11      PUSH    DE
-       0000                 10      LD  DE,CPBUF
-       0000                 10      LD  BC,4
-       0000                         LDIR
-       0000                 10      POP DE
-       0000                 11      PUSH    DE
-       0000                 11      PUSH    HL
-       0000                 10      LD  HL,CPBUF
-       0000                 17      CALL    CPFILE
-       0000                 10      POP HL
-       0000                 10      POP DE
-       0000                 10      POP BC
-       0000                 12      JR  NZ,CPNAME1
-       0000                  7      LD  A,(HL)
-       0000                  6      INC HL
-       0000                  7      LD  H,(HL)
-       0000                  4      LD  L,A
-       0000                 10      RET
-       0000                     CPNAME1:
-       0000                  6      INC HL
-       0000                  6      INC HL
-       0000                 13      DJNZ    CPNAME
-       0000                  4      SCF
-       0000                 10      RET
+       08EE                     CPNAME:
+0007EE 08EE C5              11      PUSH    BC
+0007EF 08EF D5              11      PUSH    DE
+0007F0 08F0 115E0A          10      LD  DE,CPBUF
+0007F3 08F3 010400          10      LD  BC,4
+0007F6 08F6 EDB0                    LDIR
+0007F8 08F8 D1              10      POP DE
+0007F9 08F9 D5              11      PUSH    DE
+0007FA 08FA E5              11      PUSH    HL
+0007FB 08FB 215E0A          10      LD  HL,CPBUF
+0007FE 08FE CD1109          17      CALL    CPFILE
+000801 0901 E1              10      POP HL
+000802 0902 D1              10      POP DE
+000803 0903 C1              10      POP BC
+000804 0904 2005            12      JR  NZ,CPNAME1
+000806 0906 7E               7      LD  A,(HL)
+000807 0907 23               6      INC HL
+000808 0908 66               7      LD  H,(HL)
+000809 0909 6F               4      LD  L,A
+00080A 090A C9              10      RET
+       090B                     CPNAME1:
+00080B 090B 23               6      INC HL
+00080C 090C 23               6      INC HL
+00080D 090D 10DF            13      DJNZ    CPNAME
+00080F 090F 37               4      SCF
+000810 0910 C9              10      RET
                                 
-       0000                     CPFILE:
-       0000                 11      PUSH    BC
-       0000                 10      LD  BC,00B00H
-       0000                     CPSTR1:
-       0000                  7      LD  A,(DE)
-       0000                  7      CP  '?'     ;Wild card
-       0000                 12      JR  Z,CPSTR2
-       0000                  7      LD  A,(HL)
-       0000                 17      CALL    FKANC
-       0000                 11      PUSH    HL
-       0000                  4      LD  H,A
-       0000                  7      LD  A,(DE)
-       0000                  4      RLC C
-       0000                 17      CALL    FKANC
-       0000                  4      RRC C
-       0000                  4      CP  H       ;CP (HL),(DE)
-       0000                 10      POP HL
-       0000                 12      JR  NZ,CPSTR3
-       0000                     CPSTR2:
-       0000                  6      INC DE
-       0000                  6      INC HL
-       0000                 13      DJNZ    CPSTR1
-       0000                     CPSTR3:
-       0000                 10      POP BC
-       0000                 10      RET
+       0911                     CPFILE:
+000811 0911 C5              11      PUSH    BC
+000812 0912 01000B          10      LD  BC,00B00H
+       0915                     CPSTR1:
+000815 0915 1A               7      LD  A,(DE)
+000816 0916 FE3F             7      CP  '?'     ;Wild card
+000818 0918 2812            12      JR  Z,CPSTR2
+00081A 091A 7E               7      LD  A,(HL)
+00081B 091B CDC408          17      CALL    FKANC
+00081E 091E E5              11      PUSH    HL
+00081F 091F 67               4      LD  H,A
+000820 0920 1A               7      LD  A,(DE)
+000821 0921 CB01             4      RLC C
+000823 0923 CDC408          17      CALL    FKANC
+000826 0926 CB09             4      RRC C
+000828 0928 BC               4      CP  H       ;CP (HL),(DE)
+000829 0929 E1              10      POP HL
+00082A 092A 2004            12      JR  NZ,CPSTR3
+       092C                     CPSTR2:
+00082C 092C 13               6      INC DE
+00082D 092D 23               6      INC HL
+00082E 092E 10E5            13      DJNZ    CPSTR1
+       0930                     CPSTR3:
+000830 0930 C1              10      POP BC
+000831 0931 C9              10      RET
                                 
-       0000                     CPFILE2:
-       0000                 19      LD  A,(IY+13)   ;(FCB)属性(アトリビュート)
-       0000                  7      OR  0E1H
-       0000                  4      CPL
-       0000                  7      AND (HL)
-       0000                 10      RET
+       0932                     CPFILE2:
+000832 0932 FD7E0D          19      LD  A,(IY+13)   ;(FCB)属性(アトリビュート)
+000835 0935 F6E1             7      OR  0E1H
+000837 0937 2F               4      CPL
+000838 0938 A6               7      AND (HL)
+000839 0939 C9              10      RET
                                 
-       0000                     _SYS29:     ;(BDOS)ファイル名の解析
-       0000                 11      PUSH    BC
-       0000                 11      PUSH    HL
-       0000                 17      CALL    FILE
-       0000                 10      POP HL
-       0000                 10      POP BC
-       0000                     S29X1:
-       0000                 11      PUSH    BC
-       0000                 11      PUSH    DE
-       0000                 11      PUSH    HL
-       0000                  4      EX  DE,HL
-       0000                 10      LD  HL,FDRV
-       0000                 10      LD  BC,13
-       0000                         LDIR
-       0000                  7      LD  (HL),B      ;B=0
-       0000                  7      LD  C,3
-       0000                         LDIR
-       0000                 10      POP HL
-       0000                 10      POP DE
-       0000                 10      POP BC
-       0000                  4      XOR A
-       0000                 10      RET
-       0000                     GET_WIDTH:
-       0000                 13      LD  A,(IS_MSX)
-       0000                  4      OR  A
-       0000                 12      JR  Z,NOT_MSX
-       0000                 13      LD  A,(LINLEN)
-       0000                 10      RET
-       0000                     NOT_MSX:
-       0000                 11      PUSH    HL
-       0000                 16      LD  HL,(BASE-1)
-       0000                  7      LD  L,0B1H
-       0000                  7      LD  A,(HL)
-       0000                 10      POP HL
-       0000                 10      RET
+       093A                     _SYS29:     ;(BDOS)ファイル名の解析
+00083A 093A C5              11      PUSH    BC
+00083B 093B E5              11      PUSH    HL
+00083C 093C CDC707          17      CALL    FILE
+00083F 093F E1              10      POP HL
+000840 0940 C1              10      POP BC
+       0941                     S29X1:
+000841 0941 C5              11      PUSH    BC
+000842 0942 D5              11      PUSH    DE
+000843 0943 E5              11      PUSH    HL
+000844 0944 EB               4      EX  DE,HL
+000845 0945 216E0A          10      LD  HL,FDRV
+000848 0948 010D00          10      LD  BC,13
+00084B 094B EDB0                    LDIR
+00084D 094D 70               7      LD  (HL),B      ;B=0
+00084E 094E 0E03             7      LD  C,3
+000850 0950 EDB0                    LDIR
+000852 0952 E1              10      POP HL
+000853 0953 D1              10      POP DE
+000854 0954 C1              10      POP BC
+000855 0955 AF               4      XOR A
+000856 0956 C9              10      RET
+       0957                     GET_WIDTH:
+000857 0957 3AF509          13      LD  A,(IS_MSX)
+00085A 095A B7               4      OR  A
+00085B 095B 2804            12      JR  Z,NOT_MSX
+00085D 095D 3AB0F3          13      LD  A,(LINLEN)
+000860 0960 C9              10      RET
+       0961                     NOT_MSX:
+000861 0961 E5              11      PUSH    HL
+000862 0962 2A0A00          16      LD  HL,(BASE-1)
+000865 0965 2EB1             7      LD  L,0B1H
+000867 0967 7E               7      LD  A,(HL)
+000868 0968 E1              10      POP HL
+000869 0969 C9              10      RET
                                 
-       0000                     KEYBS:
-       0000                  4      OR  A
-       0000                 11      RET Z
-       0000                     KEYBS1:
-       0000                 11      PUSH    DE
-       0000                 11      PUSH    HL
-       0000                 11      PUSH    AF
-       0000                 16      LD  HL,(PUTPNT)
-       0000                  6      INC HL
-       0000                 10      LD  DE,KEYBUFE
-       0000                  4      AND A
-       0000                 15      SBC HL,DE
-       0000                 11      ADD HL,DE
-       0000                 12      JR  NZ,KEYBS2
-       0000                 10      LD  HL,KEYBUF
-       0000                     KEYBS2:
-       0000                 20      LD  DE,(GETPNT)
-       0000                  4      AND A
-       0000                 15      SBC HL,DE
-       0000                 11      ADD HL,DE
-       0000                 12      JR  Z,KEYBS3
-       0000                 10      POP AF
-       0000                 20      LD  DE,(PUTPNT)
-       0000                  7      LD  (DE),A
-       0000                 16      LD  (PUTPNT),HL
-       0000                 10      POP HL
-       0000                 10      POP DE
-       0000                 10      RET
-       0000                     KEYBS3:
-       0000                 10      POP AF
-       0000                 10      POP HL
-       0000                 10      POP DE
-       0000                 10      RET
+       096A                     KEYBS:
+00086A 096A B7               4      OR  A
+00086B 096B C8              11      RET Z
+       096C                     KEYBS1:
+00086C 096C D5              11      PUSH    DE
+00086D 096D E5              11      PUSH    HL
+00086E 096E F5              11      PUSH    AF
+00086F 096F 2AF8F3          16      LD  HL,(PUTPNT)
+000872 0972 23               6      INC HL
+000873 0973 1118FC          10      LD  DE,KEYBUFE
+000876 0976 A7               4      AND A
+000877 0977 ED52            15      SBC HL,DE
+000879 0979 19              11      ADD HL,DE
+00087A 097A 2003            12      JR  NZ,KEYBS2
+00087C 097C 21F0FB          10      LD  HL,KEYBUF
+       097F                     KEYBS2:
+00087F 097F ED5BFAF3        20      LD  DE,(GETPNT)
+000883 0983 A7               4      AND A
+000884 0984 ED52            15      SBC HL,DE
+000886 0986 19              11      ADD HL,DE
+000887 0987 280C            12      JR  Z,KEYBS3
+000889 0989 F1              10      POP AF
+00088A 098A ED5BF8F3        20      LD  DE,(PUTPNT)
+00088E 098E 12               7      LD  (DE),A
+00088F 098F 22F8F3          16      LD  (PUTPNT),HL
+000892 0992 E1              10      POP HL
+000893 0993 D1              10      POP DE
+000894 0994 C9              10      RET
+       0995                     KEYBS3:
+000895 0995 F1              10      POP AF
+000896 0996 E1              10      POP HL
+000897 0997 D1              10      POP DE
+000898 0998 C9              10      RET
                                 
-                                COMS    EQU 9
-       0000                     COMTB:
-       0000                         DB  "D   "  ;1
-       0000                         DW  C_DIR
-       0000                         DB  "DIR "  ;2
-       0000                         DW  C_DIR
-       0000                         DB  "COPY"  ;3
-       0000                         DW  C_COPY
-       0000                         DB  "CD  "  ;4
-       0000                         DW  C_CD
-       0000                         DB  "DEL "  ;5
-       0000                         DW  C_DEL
-       0000                         DB  "PATH"  ;6
-       0000                         DW  C_PATH
-       0000                         DB  "REN "  ;7
-       0000                         DW  C_REN
-       0000                         DB  "TYPE"  ;8
-       0000                         DW  C_TYPE
-       0000                         DB  "REM "  ;9
-       0000                         DW  C_REM
+       0009                     COMS    EQU 9
+       0999                     COMTB:
+000899 0999 44202020                DB  "D   "  ;1
+00089D 099D BF03                    DW  C_DIR
+00089F 099F 44495220                DB  "DIR "  ;2
+0008A3 09A3 BF03                    DW  C_DIR
+0008A5 09A5 434F5059                DB  "COPY"  ;3
+0008A9 09A9 F605                    DW  C_COPY
+0008AB 09AB 43442020                DB  "CD  "  ;4
+0008AF 09AF 9602                    DW  C_CD
+0008B1 09B1 44454C20                DB  "DEL "  ;5
+0008B5 09B5 A003                    DW  C_DEL
+0008B7 09B7 50415448                DB  "PATH"  ;6
+0008BB 09BB 7904                    DW  C_PATH
+0008BD 09BD 52454E20                DB  "REN "  ;7
+0008C1 09C1 AC03                    DW  C_REN
+0008C3 09C3 54595045                DB  "TYPE"  ;8
+0008C7 09C7 2007                    DW  C_TYPE
+0008C9 09C9 52454D20                DB  "REM "  ;9
+0008CD 09CD 9E03                    DW  C_REM
                                 
-       0000                     FREE:   DB  " bytes free  $"
-       0000                     DIRMES: DB  "     <DIR>$"
-       0000                     OK: DB  "OK$"
-       0000                     SKIP:   DB  "Skip$"
-       0000                     COMERM: DB  "Error!$"
+0008CF 09CF 2062797465732066    FREE:   DB  " bytes free  $"
+            726565202024        
+0008DD 09DD 2020203C4449523E    DIRMES: DB  "   <DIR>$"
+            24                  
+0008E6 09E6 4F4B24              OK: DB  "OK$"
+0008E9 09E9 536B697024          SKIP:   DB  "Skip$"
+0008EE 09EE 4572726F722124      COMERM: DB  "Error!$"
                                 
-       0000                     IS_MSX:
-       0000                         DB  0
-       0000                     MAJOR_VER:
-       0000                         DB  0
+       09F5                     IS_MSX:
+0008F5 09F5 00                      DB  0
+       09F6                     MAJOR_VER:
+0008F6 09F6 00                      DB  0
                                 
-       0000                     ZERO:   DB  0
+       09F7                     SEARCH_IX:
+0008F7 09F7 0000                    DW  0
                                 
-       0000                     DTA_CCP:
-                                    DS  37
-       0000                     CPBUF:
-       0000                     LEFTX:  DW  0
-       0000                     DTAX:   DW  0
-       0000                         DB  020H    ;CPBUFで使う
-       0000                         DB  020H
-       0000                         DB  020H
-       0000                         DB  020H
-       0000                         DB  020H
-       0000                         DB  020H
-       0000                         DB  020H
+       09F9                     PATH_CCP:
+0008F9 09F9                         DS  64  ;DOS2用
                                 
-       0000                     DECBF:
-                                    DS  5
-       0000                     FDRV:
-       0000                         DB  0
-       0000                     FNAME:
-                                    DS  36
-       0000                         DB  0
+       0A39                     DTA_CCP:
+000939 0A39                         DS  37
+       0A5E                     CPBUF:
+00095E 0A5E 0000                LEFTX:  DW  0
+000960 0A60 0000                DTAX:   DW  0
+000962 0A62 20                      DB  020H    ;CPBUFで使う
+000963 0A63 20                      DB  020H
+000964 0A64 20                      DB  020H
+000965 0A65 20                      DB  020H
+000966 0A66 20                      DB  020H
+000967 0A67 20                      DB  020H
+000968 0A68 20                      DB  020H
                                 
-       0000                     DATA:
+       0A69                     DECBF:
+000969 0A69                         DS  5
+       0A6E                     FDRV:
+00096E 0A6E 00                      DB  0
+       0A6F                     FNAME:
+00096F 0A6F                         DS  37
+       0A94                     ZERO:
+000994 0A94 00                      DB  0
+                                
+       0A95                     DATA:
 [EOF:COMMAND.ASM:SHIFT_JIS]

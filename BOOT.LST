@@ -14,27 +14,32 @@
                                 
 00001E C01E D0              11      RET NC
                                 
-00001F C01F 114AC0          10      LD  DE,FCB
-000022 C022 0E0F             7      LD  C,00FH
-000024 C024 CD7DF3          17      CALL    BDOS
+00001F C01F EB               4      EX  DE,HL
+000020 C020 CD4EC0          17      CALL    JP_HL
                                 
-000027 C027 110001          10      LD  DE,00100H
-00002A C02A 0E1A             7      LD  C,01AH      ;(BDOS)DTAの設定
-00002C C02C CD7DF3          17      CALL    BDOS
+000023 C023 114FC0          10      LD  DE,FCB
+000026 C026 0E0F             7      LD  C,00FH
+000028 C028 CD7DF3          17      CALL    BDOS
                                 
-00002F C02F 210000          10      LD  HL,0
-000032 C032 226BC0          16      LD  (FCB+33),HL
-000035 C035 226DC0          16      LD  (FCB+35),HL
-000038 C038 2C               4      INC L
-000039 C039 2258C0          16      LD  (FCB+14),HL
+00002B C02B 110001          10      LD  DE,00100H
+00002E C02E 0E1A             7      LD  C,01AH      ;(BDOS)DTAの設定
+000030 C030 CD7DF3          17      CALL    BDOS
                                 
-00003C C03C 114AC0          10      LD  DE,FCB
-00003F C03F 2100BF          10      LD  HL,0BF00H
-000042 C042 0E27             7      LD  C,027H      ;(BDOS)ランダム・ブロック・リード
-000044 C044 CD7DF3          17      CALL    BDOS
+000033 C033 210000          10      LD  HL,0
+000036 C036 2270C0          16      LD  (FCB+33),HL
+000039 C039 2272C0          16      LD  (FCB+35),HL
+00003C C03C 2C               4      INC L
+00003D C03D 225DC0          16      LD  (FCB+14),HL
                                 
-000047 C047 C30001          10      JP  0100H
+000040 C040 114FC0          10      LD  DE,FCB
+000043 C043 2100BF          10      LD  HL,0BF00H
+000046 C046 0E27             7      LD  C,027H      ;(BDOS)ランダム・ブロック・リード
+000048 C048 CD7DF3          17      CALL    BDOS
                                 
-00004A C04A 00444F5320202020    FCB:    DB  0, "DOS     SYS",0,0,0,0
+00004B C04B C30001          10      JP  0100H
+       C04E                     JP_HL:
+00004E C04E E9               4      JP  (HL)
+                                
+00004F C04F 00444F5320202020    FCB:    DB  0, "DOS     SYS",0,0,0,0
             2053595300000000    
 [EOF:BOOT.ASM:SHIFT_JIS]
