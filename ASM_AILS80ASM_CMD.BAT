@@ -5,4 +5,4 @@ rem
 
 set ASM=\tool\AILSZ80\AILZ80ASM.exe
 
-%ASM% -lst -bin COMMAND.COM -i COMMAND.ASM -f -gap 0
+%ASM% -lst -bin COMMAND.COM -i COMMAND.ASM -f -gap 0 -sym
