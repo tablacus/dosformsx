@@ -7,11 +7,22 @@
                                 ;
                                 ;   BPB
                                 ;
-000000 C000 EBFE90444F532020        DB  0EBH,0FEH,90H,"DOS  "
-000008 C008 2020200002020100        DB  "   ",00H,02H,02H,01H,00H
-000010 C010 027000A005F90300        DB  02H,70H,00H,0A0H,05H,0F9H,03H,00H
-000018 C018 090002000000            DB  09H,00H,02H,00H,00H,00H
-                                
+000000 C000 EBFE90                  DB  0EBH,0FEH,90H   ;BS_JmpBoot
+000003 C003 444F532020202020        DB  "DOS     "  ;BS_OEMName
+00000B C00B 0002                    DW  512     ;BPB_BytsPerSec
+00000D C00D 02                      DB  2       ;BPB_SecPerClus
+00000E C00E 0100                    DW  1       ;BPB_RsvdSecCnt
+000010 C010 02                      DB  2       ;BPB_NumFATs
+000011 C011 7000                    DW  112     ;BPB_RootEntCnt
+000013 C013 A005                    DW  1440        ;BPB_TotSec16
+000015 C015 F9                      DB  0F9H        ;BPB_Media
+000016 C016 0300                    DW  3       ;BPB_FATSz16
+000018 C018 0900                    DW  9       ;BPB_SecPerTrk
+00001A C01A 0200                    DW  2       ;BPB_NumHeads
+00001C C01C 0000                    DW  0       ;BPB_HiddSec(2バイト)
+                                ;
+                                ;   ブートプログラム
+                                ;
 00001E C01E D0              11      RET NC
                                 
 00001F C01F EB               4      EX  DE,HL

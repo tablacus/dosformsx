@@ -6,11 +6,22 @@
 ;
 ;	BPB
 ;
-	DB	0EBH,0FEH,90H,"DOS  "
-	DB	"   ",00H,02H,02H,01H,00H
-	DB	02H,70H,00H,0A0H,05H,0F9H,03H,00H
-	DB	09H,00H,02H,00H,00H,00H
-
+	DB	0EBH,0FEH,090H	;BS_JmpBoot
+	DB	"DOS     "	;BS_OEMName
+	DW	512		;BPB_BytsPerSec
+	DB	2		;BPB_SecPerClus
+	DW	1		;BPB_RsvdSecCnt
+	DB	2		;BPB_NumFATs
+	DW	112		;BPB_RootEntCnt
+	DW	1440		;BPB_TotSec16
+	DB	0F9H		;BPB_Media
+	DW	3		;BPB_FATSz16
+	DW	9		;BPB_SecPerTrk
+	DW	2		;BPB_NumHeads
+	DW	0		;BPB_HiddSec(2バイト)
+;
+;	ブートプログラム
+;
 	RET	NC
 
 	EX	DE,HL
