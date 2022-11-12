@@ -11,8 +11,10 @@ DTA1	EQU	00080H
 FCB11	EQU	0F307H
 BDOS	EQU	0F37DH
 LINL40	EQU	0F3AEH
+KBUF	EQU	0F41FH
 BUF	EQU	0F55EH
 MEMSIZ	EQU	0F672H
+EXBRSA	EQU	0FAF8H
 EXPTBL	EQU	0FCC1H
 EXTBIOS	EQU	0FFCAH
 MAPPER	EQU	00402H
@@ -23,17 +25,31 @@ SAVE_IX	EQU	BUF+4
 SAVE_C	EQU	BUF+6
 DE_MEM_SIZE	EQU	BUF+7
 SAVE_HL	EQU	BUF+8
-ALT_MEM	EQU	BUF+10
+SAVE_A	EQU	BUF+10
+EXTSP	EQU	BUF+11
+ALT_MEM	EQU	KBUF
 ALT_MEM2	EQU	ALT_MEM+64
 ALT_MEM3	EQU	ALT_MEM2+64
 
 	ORG	0100H
 	CALL	0F36BH		;ページ1をメインRAMに切り替える
+	LD	HL,KBUF
+	LD	DE,KBUF+1
+	LD	(HL),0
+	LD	BC,317
+	LDIR
+	LD	HL,BUF
+	LD	DE,BUF+1
+	LD	(HL),0
+	LD	BC,257
+	LDIR
 	LD	A,0C3H		;JP
 	LD	(0),A		;WBOOT
 	LD	(SYSTEM),A
 
 	LD	HL,(MEMSIZ)
+	LD	L,0
+	LD	(EXTSP),HL
 	LD	L,3
 	DEC	H
 	LD	(1),HL		;WBOOT
@@ -56,13 +72,7 @@ ALT_MEM3	EQU	ALT_MEM2+64
 	INC	A		;A:+2
 	LD	L,WBOOT_+2
 	LD	(HL),A
-;	LD	L,_ALL
-;	LD	(HL),A
-	INC	A		;A:+3
-	LD	L,EXTSP+1
-	LD	(HL),A
-	DEC	A		;A:+2
-	INC	H
+	INC	H		;H:+1
 	INC	H		;H:+2
 	LD	L,2
 	LD	(HL),A
@@ -84,14 +94,19 @@ ALT_MEM3	EQU	ALT_MEM2+64
 	DEC	H		;H:+0
 	LD	L,BDOS0
 	LD	(SYSTEM+1),HL
-	LD	C,19H		;(BDOS)カレント・ドライブ番号の獲得
+	LD	C,19H		;(BDOS)_CURDRV カレント・ドライブ番号の獲得
 	CALL	BDOS
 	INC	A
 	POP	HL		;H:+1
 	LD	L,FCBCMD-BOOT
 	LD	(HL),A
 
+	LD	A,(EXBRSA)
+	OR	A
 	LD	A,40
+	JR	Z,MSX1
+	LD	A,80		;MSX2以降は80桁で起動
+MSX1:
 	LD	(LINL40),A
 	LD	IY,(EXPTBL)	;メインROMスロット
 	LD	IX,INITXT
@@ -103,7 +118,7 @@ ALT_MEM3	EQU	ALT_MEM2+64
 	LD	DE,TITLE
 	LD	C,9
 	CALL	BDOS
-	LD	C,06FH		;MSX-DOS のバージョン番号の獲得(_DOSVER)
+	LD	C,06FH		;_DOSVER MSX-DOS のバージョン番号の獲得
 	CALL	BDOS
 	LD	A,B
 	CP	2
@@ -119,11 +134,6 @@ DOS1:
 	LD	HL,AUTOEXEC
 	LD	DE,DTA1+1
 	LDIR
-	LD	HL,BUF
-	LD	DE,BUF+1
-	LD	(HL),0
-	LD	BC,257
-	LDIR
 	LD	A,9
 	LD	HL,(1)
 	LD	L,CBOOT & $FF
@@ -132,7 +142,7 @@ JP_HL:
 TITLE:
 	DB	"DOS$"
 TITLE2:
-	DB	" for MSX v0.05 Gaku$"
+	DB	" for MSX v0.06 Gaku$"
 AUTOEXEC:
 	DB	"AUTOEXEC",0
 REAL:
@@ -142,45 +152,53 @@ MAIN:
 BDOS0:
 	JP	BDOS1
 BDOS1:
+	LD	(SAVE_A),A
 	LD	A,C
 	OR	A
 WBOOT_:
 	JP	Z,WBOOT
-	CP	9		;文字列出力
+	CP	062H		;_TERM エラーコードを返して終了
+	JR	Z,WBOOT_
+	CP	9		;_STROUT 文字列出力
 SYS09_:
 	JP	Z,_SYS09
 BDOS2:
-	LD	A,C
 	LD	(SAVE_C),A
-	CP	00FH		;ファイルオープン
+	CP	00FH		;_FOPEN ファイルオープン
 	JR	C,SAVEFCB0
-	CP	012H		;ファイル検索 続き
+	CP	012H		;_SNEXT ファイル検索 続き
 	JR	NZ,NOBD12
 	LD	DE,(FCB11)
 NOBD12:
-	CP	018H		;ログインベクトルの獲得
+	CP	018H		;_LOGIN ログインベクトルの獲得
 	JR	C,SAVEFCB36
-	CP	021H		;ランダム読み出し
+	CP	021H		;_RDRND ランダム読み出し
 	JR	C,SAVEFCB0
-	CP	029H		;ゼロ書き込みを伴うランダム書き込み+1
+	CP	028H+1		;_WRZER ゼロ書き込みを伴うランダム書き込み+1
 	JR	C,SAVEFCB36
-	CP	040H		;最初のエントリ検索
+	CP	040H		;_FFIRST 最初のエントリ検索
 	JR	Z,SAVE_PATH
-	CP	042H		;新しいエントリの検索
+	CP	042H		;_FNEW 新しいエントリの検索
 	JR	Z,SAVE_PATH
-	CP	043H		;ファイルハンドルのオープン
+	CP	043H		;_OPEN ファイルハンドルのオープン
 	JR	Z,SAVE_PATH
-	CP	044H		;ファイルハンドルの作成
+	CP	044H		;_CREATE ファイルハンドルの作成
 	JR	Z,SAVE_PATH
-	CP	059H		;カレントディレクトリの獲得
+	CP	04CH 		;_HTEST ファイルハンドルの検査
 	JR	Z,SAVE_PATH
-	CP	05BH		;パス名の解析
+	CP	050H		;_ATTR ファイル属性の獲得・設定
 	JR	Z,SAVE_PATH
-	CP	05CH		;ファイル名の解析
+	CP	051H		;_FTIME ファイルの日付および時刻の獲得・設定
 	JR	Z,SAVE_PATH
-	CP	05EH		;パス文字列全体の獲得
+	CP	059H		;_GETCD カレントディレクトリの獲得
 	JR	Z,SAVE_PATH
-	CP	066H		;エラーコードの説明
+	CP	05BH		;_PARSE パス名の解析
+	JR	Z,SAVE_PATH
+	CP	05CH		;_PFILE ファイル名の解析
+	JR	Z,SAVE_PATH
+	CP	05EH		;_WPATH パス文字列全体の獲得
+	JR	Z,SAVE_PATH
+	CP	066H		;_EXPLAIN エラーコードの説明
 	JR	Z,SAVE_PATH
 	JR	SAVEFCB0
 SAVEFCB36:
@@ -246,9 +264,17 @@ BDOS3IX:
 	XOR	A
 	LD	(SAVE_HL+1),A
 	LD	A,C
-	CP	040H		;最初のエントリの検索
+	CP	052H		;_HDELETE ファイルハンドルの削除
 	JR	Z,SAVE_HL1
-	CP	05CH		;ファイル名の解析
+	CP	05CH		;_PFILE ファイル名の解析
+	JR	Z,SAVE_HL1
+	CP	040H		;_FFIRST 最初のエントリ検索
+	JR	Z,FIBCHECK
+	CP	042H		;_FNEW 新しいエントリ検索
+	JR	NZ,BDOS3HL
+FIBCHECK:
+	LD	A,(DE)
+	INC	A		;DEがFIBならば0FFH
 	JR	NZ,BDOS3HL
 SAVE_HL1:
 	LD	A,H
@@ -266,23 +292,9 @@ SAVE_HL1:
 	POP	BC
 	LD	HL,ALT_MEM3
 BDOS3HL:
-;	LD	A,C
-;	CP	040H		;最初のエントリの検索
-;	JR	NZ,FIX40
-;	LD	A,(DE)		;なぜか「.」でカレントの一覧が取得できないので「*.*」にする
-;	CP	'.'
-;	JR	NZ,FIX40
-;	INC	DE
-;	LD	A,(DE)
-;	DEC	DE
-;	OR	A
-;	JR	NZ,FIX40
-;_ALL	EQU	$+2
-;	LD	DE,ALL
-;FIX40:
 	LD	(SAVE_SP),SP
-EXTSP	EQU	$+1
-	LD	SP,0
+	LD	SP,(EXTSP)
+	LD	A,(SAVE_A)
 	CALL	BDOS
 	LD	SP,(SAVE_SP)
 
@@ -334,7 +346,7 @@ BDOS4:
 	POP	BC
 BDOS5:
 	LD	A,(SAVE_C)
-	CP	05BH		;パス名の解析
+	CP	05BH		;_PARSE パス名の解析
 	JR	NZ,BDOS6
 	PUSH	BC
 	LD	BC,ALT_MEM
@@ -364,7 +376,7 @@ CONOUT1:
 	LD	C,2
 	JP	SYSTEM
 
-_SYS09:		;文字列出力
+_SYS09:		;_STROUT 文字列出力
 	LD	A,(DE)
 	INC	DE
 	CP	'$'
@@ -440,6 +452,4 @@ SHOW_ERROR:
 	INC	H
 	JR	CBOOT
 
-;ALL:
-;	DB	"*.*",0
 MAIN_END:
