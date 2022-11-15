@@ -10,10 +10,6 @@ DOS2カーネルを持っているマシンで`dos2formsx.dsk`を使うとMSX-DO
 
 コマンドシェルの似非COMMANDはMSX-DOS互換OSの[LSX-Dodgers](https://github.com/tablacus/LSX-Dodgers)をベースにして作成しました。
 
-内部コマンドについては以下のLSX-Dodgers用とほぼ同じです。
-
-https://github.com/tablacus/LSX-Dodgers/blob/master/LDCMD.TXT
-
 起動時にはAUTOEXECというコマンドを実行します。「AUTOEXEC.COM」や「AUTOEXEC.BAT」があればそのまま実行します。
 
 DOS2モードでも現時点では内部コマンドは基本的にカレントディレクトリが対象になります。`CD`コマンドで移動してから使ってください。
@@ -23,6 +19,10 @@ DOS2モードでも現時点では内部コマンドは基本的にカレント�
 以下のページの Assets からダウンロードできます。
 
 https://github.com/tablacus/dosformsx/releases
+
+# 内部コマンド
+
+https://github.com/tablacus/dosformsx/blob/master/COMMAND.TXT
 
 # 基本的なシステムコールの使い方のサンプル
 
