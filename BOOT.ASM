@@ -1,4 +1,4 @@
-;	似非DOS BOOT
+;	似非DOS BOOT (DOS1)
 
 	BDOS	EQU	0F37DH
 
@@ -19,9 +19,15 @@
 	DW	9		;BPB_SecPerTrk
 	DW	2		;BPB_NumHeads
 	DW	0		;BPB_HiddSec(2バイト)
+	JR	START		;ブートプログラムへジャンプ
+	DB	"_DOS1_"	;MSX-DOS2判別用(VOL_IDじゃなければDOS1)
+	DB	0		;ダーティディスクフラグ
+	DB	"DOS1"		;ボリュームID(適当な4バイト)
+	DS	5		;Reserved for future
 ;
 ;	ブートプログラム
 ;
+START:
 	RET	NC
 
 	EX	DE,HL

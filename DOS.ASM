@@ -168,7 +168,7 @@ JP_HL:
 TITLE:
 	DB	"DOS$"
 TITLE2:
-	DB	" for MSX v0.07 Gaku$"
+	DB	" for MSX v0.08 Gaku$"
 AUTOEXEC:
 	DB	"AUTOEXEC",0
 N_SHELL:
@@ -217,6 +217,8 @@ NOBD12:
 	JR	C,SAVEFCB0
 	CP	028H+1		;_WRZER ゼロ書き込みを伴うランダム書き込み+1
 	JR	C,SAVEFCB36
+	CP	031H		;_DPARM ディスクパラメータの獲得
+	JR	Z,SAVEFCB36
 	CP	040H		;_FFIRST 最初のエントリ検索
 	JR	Z,SAVE_PATH
 	CP	042H		;_FNEW 新しいエントリの検索

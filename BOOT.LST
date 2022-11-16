@@ -1,5 +1,5 @@
                                 ;*** AILZ80ASM *** Z-80 Assembler, version 1.0.0.0, LST:Full:4
-                                ;   似非DOS BOOT
+                                ;   似非DOS BOOT (DOS1)
                                 
        F37D                         BDOS    EQU 0F37DH
                                 
@@ -7,7 +7,7 @@
                                 ;
                                 ;   BPB
                                 ;
-000000 C000 EBFE90                  DB  0EBH,0FEH,90H   ;BS_JmpBoot
+000000 C000 EBFE90                  DB  0EBH,0FEH,090H  ;BS_JmpBoot
 000003 C003 444F532020202020        DB  "DOS     "  ;BS_OEMName
 00000B C00B 0002                    DW  512     ;BPB_BytsPerSec
 00000D C00D 02                      DB  2       ;BPB_SecPerClus
@@ -20,37 +20,43 @@
 000018 C018 0900                    DW  9       ;BPB_SecPerTrk
 00001A C01A 0200                    DW  2       ;BPB_NumHeads
 00001C C01C 0000                    DW  0       ;BPB_HiddSec(2バイト)
+00001E C01E 1810            12      JR  START       ;ブートプログラムへジャンプ
+000020 C020 5F444F53315F            DB  "_DOS1_"    ;MSX-DOS2判別用(VOL_IDじゃなければDOS1)
+000026 C026 00                      DB  0       ;ダーティディスクフラグ
+000027 C027 444F5331                DB  "DOS1"      ;ボリュームID(適当な4バイト)
+00002B C02B                         DS  5       ;Reserved for future
                                 ;
                                 ;   ブートプログラム
                                 ;
-00001E C01E D0              11      RET NC
+       C030                     START:
+000030 C030 D0              11      RET NC
                                 
-00001F C01F EB               4      EX  DE,HL
-000020 C020 CD4EC0          17      CALL    JP_HL
+000031 C031 EB               4      EX  DE,HL
+000032 C032 CD60C0          17      CALL    JP_HL
                                 
-000023 C023 114FC0          10      LD  DE,FCB
-000026 C026 0E0F             7      LD  C,00FH
-000028 C028 CD7DF3          17      CALL    BDOS
+000035 C035 1161C0          10      LD  DE,FCB
+000038 C038 0E0F             7      LD  C,00FH
+00003A C03A CD7DF3          17      CALL    BDOS
                                 
-00002B C02B 110001          10      LD  DE,00100H
-00002E C02E 0E1A             7      LD  C,01AH      ;(BDOS)DTAの設定
-000030 C030 CD7DF3          17      CALL    BDOS
+00003D C03D 110001          10      LD  DE,00100H
+000040 C040 0E1A             7      LD  C,01AH      ;(BDOS)DTAの設定
+000042 C042 CD7DF3          17      CALL    BDOS
                                 
-000033 C033 210000          10      LD  HL,0
-000036 C036 2270C0          16      LD  (FCB+33),HL
-000039 C039 2272C0          16      LD  (FCB+35),HL
-00003C C03C 2C               4      INC L
-00003D C03D 225DC0          16      LD  (FCB+14),HL
+000045 C045 210000          10      LD  HL,0
+000048 C048 2282C0          16      LD  (FCB+33),HL
+00004B C04B 2284C0          16      LD  (FCB+35),HL
+00004E C04E 2C               4      INC L
+00004F C04F 226FC0          16      LD  (FCB+14),HL
                                 
-000040 C040 114FC0          10      LD  DE,FCB
-000043 C043 2100BF          10      LD  HL,0BF00H
-000046 C046 0E27             7      LD  C,027H      ;(BDOS)ランダム・ブロック・リード
-000048 C048 CD7DF3          17      CALL    BDOS
+000052 C052 1161C0          10      LD  DE,FCB
+000055 C055 2100BF          10      LD  HL,0BF00H
+000058 C058 0E27             7      LD  C,027H      ;(BDOS)ランダム・ブロック・リード
+00005A C05A CD7DF3          17      CALL    BDOS
                                 
-00004B C04B C30001          10      JP  0100H
-       C04E                     JP_HL:
-00004E C04E E9               4      JP  (HL)
+00005D C05D C30001          10      JP  0100H
+       C060                     JP_HL:
+000060 C060 E9               4      JP  (HL)
                                 
-00004F C04F 00444F5320202020    FCB:    DB  0, "DOS     SYS",0,0,0,0
+000061 C061 00444F5320202020    FCB:    DB  0, "DOS     SYS",0,0,0,0
             2053595300000000    
 [EOF:BOOT.ASM:SHIFT_JIS]

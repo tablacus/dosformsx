@@ -20,16 +20,18 @@
 	DW	2		;BPB_NumHeads
 	DW	0		;BPB_HiddSec(2バイト)
 	JR	START		;ブートプログラムへジャンプ
-	DB	"VOL_ID"	;MSX-DOS2判別用
+	DB	"VOL_ID"	;MSX-DOS2判別用(VOL_IDなのでDOS2)
 	DB	0		;ダーティディスクフラグ
 	DB	"DOS2"		;ボリュームID(適当な4バイト)
 	DS	5		;Reserved for future
-
+;
+;	ブートプログラム
+;
 START:
 	RET	NC
 
-;	EX	DE,HL
-;	CALL	JP_HL
+	EX	DE,HL
+	CALL	JP_HL
 
 	LD	DE,FCB
 	LD	C,00FH
