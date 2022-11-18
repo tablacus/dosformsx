@@ -168,7 +168,7 @@ JP_HL:
 TITLE:
 	DB	"DOS$"
 TITLE2:
-	DB	" for MSX v0.09 Gaku$"
+	DB	" for MSX v0.10 Gaku$"
 AUTOEXEC:
 	DB	"AUTOEXEC",0
 N_SHELL:
@@ -387,6 +387,8 @@ BDOS4:
 	POP	DE
 	POP	BC
 BDOS5:
+	LD	A,(DE_MEM_SIZE)
+	JR	Z,BDOS6
 	LD	A,(SAVE_C)
 	CP	05BH		;_PARSE パス名の解析
 	JR	NZ,BDOS6
