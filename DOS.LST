@@ -28,6 +28,7 @@
        F566                     SAVE_HL EQU BUF+8
        F568                     SAVE_A  EQU BUF+10
        F569                     EXTSP   EQU BUF+11
+       F56B                     DEFAB   EQU BUF+13
        F41F                     ALT_MEM EQU KBUF
        F45F                     ALT_MEM2    EQU ALT_MEM+64
        F49F                     ALT_MEM3    EQU ALT_MEM2+64
@@ -48,504 +49,513 @@
 00001F 011F 320000          13      LD  (0),A       ;WBOOT
 000022 0122 320500          13      LD  (SYSTEM),A
                                 
-000025 0125 2A72F6          16      LD  HL,(MEMSIZ)
-000028 0128 2E00             7      LD  L,0
-00002A 012A 2269F5          16      LD  (EXTSP),HL
-00002D 012D 2E03             7      LD  L,3
-00002F 012F 25               4      DEC H
-000030 0130 220100          16      LD  (1),HL      ;WBOOT
-000033 0133 2C               4      INC L
-000034 0134 25               4      DEC H
-000035 0135 25               4      DEC H
-000036 0136 7C               4      LD  A,H
-000037 0137 F9               6      LD  SP,HL
-000038 0138 EB               4      EX  DE,HL
-000039 0139 219602          10      LD  HL,REAL
-00003C 013C 015D02          10      LD  BC,MAIN_END-MAIN
-00003F 013F EDB0                    LDIR
+000025 0125 0E6F             7      LD  C,06FH      ;_DOSVER MSX-DOS のバージョン番号の獲得
+000027 0127 CD7DF3          17      CALL    BDOS
+00002A 012A 78               4      LD  A,B
+00002B 012B FE02             7      CP  2
+00002D 012D 9F               4      SBC A,A
+00002E 012E 329D02          13      LD  (ISDOS1),A
+000031 0131 3816            12      JR  C,DOS1R
+000033 0133 213202          10      LD  HL,N_SHELL  ;DOS2の場合はCOMMAND.COMの読み込みに
+000036 0136 115104          10      LD  DE,AT_COMMAND1+1    ;ファイルハンドルを用いるものに差し替え
+000039 0139 010600          10      LD  BC,6        ;階層ディレクトリに対応の為
+00003C 013C EDB0                    LDIR
+00003E 013E 21F904          10      LD  HL,AT_DOS2RELOAD
+000041 0141 11B004          10      LD  DE,AT_DOS1RELOAD
+000044 0144 013000          10      LD  BC,DOS2RELOAD_-DOS2RELOAD
+000047 0147 EDB0                    LDIR
+       0149                     DOS1R:
+000049 0149 2A72F6          16      LD  HL,(MEMSIZ)
+00004C 014C 2E00             7      LD  L,0
+00004E 014E 2269F5          16      LD  (EXTSP),HL
+000051 0151 2E03             7      LD  L,3
+000053 0153 25               4      DEC H
+000054 0154 220100          16      LD  (1),HL      ;WBOOT
+000057 0157 2C               4      INC L
+000058 0158 25               4      DEC H
+000059 0159 25               4      DEC H
+00005A 015A 7C               4      LD  A,H
+00005B 015B F9               6      LD  SP,HL
+00005C 015C EB               4      EX  DE,HL
+00005D 015D 219E02          10      LD  HL,REAL
+000060 0160 015B02          10      LD  BC,MAIN_END-MAIN
+000063 0163 EDB0                    LDIR
                                                 ;リロケータブル
-000041 0141 67               4      LD  H,A     ;H:+0/A:+0
-000042 0142 2E08             7      LD  L,BDOS0+2
-000044 0144 77               7      LD  (HL),A
-000045 0145 3C               4      INC A
-000046 0146 2E21             7      LD  L,SYS09_+2
-000048 0148 77               7      LD  (HL),A
-000049 0149 3C               4      INC A       ;A:+2
-00004A 014A 2E10             7      LD  L,WBOOT_+2
-00004C 014C 77               7      LD  (HL),A
-00004D 014D 24               4      INC H       ;H:+1
-00004E 014E 24               4      INC H       ;H:+2
-00004F 014F 2E02             7      LD  L,2
-000051 0151 77               7      LD  (HL),A
-000052 0152 2E05             7      LD  L,WBOOT+2-BOOT
-000054 0154 77               7      LD  (HL),A
-000055 0155 3D               4      DEC A       ;A:+1
-000056 0156 2E08             7      LD  L,CONST_+2-BOOT
-000058 0158 77               7      LD  (HL),A
-000059 0159 2E0B             7      LD  L,CONIN+2-BOOT
-00005B 015B 77               7      LD  (HL),A
-00005C 015C 2E0E             7      LD  L,CONOUT+2-BOOT
-00005E 015E 77               7      LD  (HL),A
-00005F 015F 2E13             7      LD  L,FCBPAT+2-BOOT
-000061 0161 77               7      LD  (HL),A
-000062 0162 2E52             7      LD  L,SHOW_ERROR+2-BOOT
-000064 0164 77               7      LD  (HL),A
-000065 0165 25               4      DEC H       ;H:+1
-000066 0166 E5              11      PUSH    HL
-000067 0167 25               4      DEC H       ;H:+0
-000068 0168 2E06             7      LD  L,BDOS0
-00006A 016A 220600          16      LD  (SYSTEM+1),HL
-00006D 016D 0E19             7      LD  C,19H       ;(BDOS)_CURDRV カレントドライブ番号の獲得
-00006F 016F CD7DF3          17      CALL    BDOS
-000072 0172 3C               4      INC A
-000073 0173 E1              10      POP HL      ;H:+1
-000074 0174 2EA2             7      LD  L,FCBCMD-BOOT
-000076 0176 77               7      LD  (HL),A
-000077 0177 C640             7      ADD A,040H
-000079 0179 323102          13      LD  (V_SHELL),A
+000065 0165 67               4      LD  H,A     ;H:+0/A:+0
+000066 0166 2E08             7      LD  L,BDOS0+2
+000068 0168 77               7      LD  (HL),A
+000069 0169 3C               4      INC A
+00006A 016A 2E2D             7      LD  L,SYS09_+2
+00006C 016C 77               7      LD  (HL),A
+00006D 016D 3C               4      INC A       ;A:+2
+00006E 016E 24               4      INC H       ;H:+1
+00006F 016F 24               4      INC H       ;H:+2
+000070 0170 2E02             7      LD  L,2
+000072 0172 77               7      LD  (HL),A
+000073 0173 2E05             7      LD  L,WBOOT+2-BOOT
+000075 0175 77               7      LD  (HL),A
+000076 0176 3D               4      DEC A       ;A:+1
+000077 0177 2E08             7      LD  L,CONST_+2-BOOT
+000079 0179 77               7      LD  (HL),A
+00007A 017A 2E0B             7      LD  L,CONIN+2-BOOT
+00007C 017C 77               7      LD  (HL),A
+00007D 017D 2E0E             7      LD  L,CONOUT+2-BOOT
+00007F 017F 77               7      LD  (HL),A
+000080 0180 2E15             7      LD  L,FCBPAT+2-BOOT
+000082 0182 77               7      LD  (HL),A
+000083 0183 2E50             7      LD  L,SHOW_ERROR+2-BOOT
+000085 0185 77               7      LD  (HL),A
+000086 0186 25               4      DEC H       ;H:+1
+000087 0187 E5              11      PUSH    HL
+000088 0188 25               4      DEC H       ;H:+0
+000089 0189 2E06             7      LD  L,BDOS0
+00008B 018B 220600          16      LD  (SYSTEM+1),HL
+00008E 018E 0E19             7      LD  C,19H       ;(BDOS)_CURDRV カレントドライブ番号の獲得
+000090 0190 CD7DF3          17      CALL    BDOS
+000093 0193 3C               4      INC A
+000094 0194 E1              10      POP HL      ;H:+1
+000095 0195 2EB6             7      LD  L,FCBCMD-BOOT
+000097 0197 77               7      LD  (HL),A
+000098 0198 C640             7      ADD A,040H
+00009A 019A 323802          13      LD  (V_SHELL),A
                                 
-00007C 017C 3AF8FA          13      LD  A,(EXBRSA)
-00007F 017F B7               4      OR  A
-000080 0180 3E28             7      LD  A,40
-000082 0182 2802            12      JR  Z,MSX1
-000084 0184 3E50             7      LD  A,80        ;MSX2以降は80桁で起動
-       0186                     MSX1:
-000086 0186 32AEF3          13      LD  (LINL40),A
-000089 0189 FD2AC1FC        20      LD  IY,(EXPTBL) ;メインROMスロット
-00008D 018D DD216C00        14      LD  IX,INITXT
-000091 0191 CD1C00          17      CALL    CALSLT
-000094 0194 FD2AC1FC        20      LD  IY,(EXPTBL) ;メインROMスロット
-000098 0198 DD217800        14      LD  IX,SETTXT
-00009C 019C CD1C00          17      CALL    CALSLT
+00009D 019D 3AF8FA          13      LD  A,(EXBRSA)
+0000A0 01A0 B7               4      OR  A
+0000A1 01A1 3E28             7      LD  A,40
+0000A3 01A3 2802            12      JR  Z,MSX1
+0000A5 01A5 3E50             7      LD  A,80        ;MSX2以降は80桁で起動
+       01A7                     MSX1:
+0000A7 01A7 32AEF3          13      LD  (LINL40),A
+0000AA 01AA FD2AC1FC        20      LD  IY,(EXPTBL) ;メインROMスロット
+0000AE 01AE DD216C00        14      LD  IX,INITXT
+0000B2 01B2 CD1C00          17      CALL    CALSLT
+0000B5 01B5 FD2AC1FC        20      LD  IY,(EXPTBL) ;メインROMスロット
+0000B9 01B9 DD217800        14      LD  IX,SETTXT
+0000BD 01BD CD1C00          17      CALL    CALSLT
                                 
-00009F 019F 110A02          10      LD  DE,TITLE
-0000A2 01A2 0E09             7      LD  C,9
-0000A4 01A4 CD7DF3          17      CALL    BDOS
-0000A7 01A7 0E6F             7      LD  C,06FH      ;_DOSVER MSX-DOS のバージョン番号の獲得
-0000A9 01A9 CD7DF3          17      CALL    BDOS
-0000AC 01AC 78               4      LD  A,B
-0000AD 01AD FE02             7      CP  2
-0000AF 01AF 383E            12      JR  C,DOS1
-0000B1 01B1 1E32             7      LD  E,'2'
-0000B3 01B3 0E02             7      LD  C,2
-0000B5 01B5 CD7DF3          17      CALL    BDOS
+0000C0 01C0 111102          10      LD  DE,TITLE
+0000C3 01C3 0E09             7      LD  C,9
+0000C5 01C5 CD7DF3          17      CALL    BDOS
+0000C8 01C8 3A9D02          13      LD  A,(ISDOS1)
+0000CB 01CB 87               4      ADD A,A
+0000CC 01CC 3828            12      JR  C,DOS1
+0000CE 01CE 1E32             7      LD  E,'2'
+0000D0 01D0 0E02             7      LD  C,2
+0000D2 01D2 CD7DF3          17      CALL    BDOS
                                 
-0000B8 01B8 212B02          10      LD  HL,N_SHELL
-0000BB 01BB 113102          10      LD  DE,V_SHELL
-0000BE 01BE 0E6C             7      LD  C,06CH      ;_SENV 環境変数のセット
-0000C0 01C0 CD7DF3          17      CALL    BDOS
+0000D5 01D5 213202          10      LD  HL,N_SHELL
+0000D8 01D8 113802          10      LD  DE,V_SHELL
+0000DB 01DB 0E6C             7      LD  C,06CH      ;_SENV 環境変数のセット
+0000DD 01DD CD7DF3          17      CALL    BDOS
                                 
-0000C3 01C3 214002          10      LD  HL,N_DATE
-0000C6 01C6 114502          10      LD  DE,V_DATE
-0000C9 01C9 0E6C             7      LD  C,06CH      ;_SENV 環境変数のセット
-0000CB 01CB CD7DF3          17      CALL    BDOS
+0000E0 01E0 214702          10      LD  HL,N_DATE
+0000E3 01E3 114C02          10      LD  DE,V_DATE
+0000E6 01E6 0E6C             7      LD  C,06CH      ;_SENV 環境変数のセット
+0000E8 01E8 CD7DF3          17      CALL    BDOS
                                 
-0000CE 01CE 214E02          10      LD  HL,N_TIME
-0000D1 01D1 115302          10      LD  DE,V_TIME
-0000D4 01D4 0E6C             7      LD  C,06CH      ;_SENV 環境変数のセット
-0000D6 01D6 CD7DF3          17      CALL    BDOS
+0000EB 01EB 215502          10      LD  HL,N_TIME
+0000EE 01EE 115A02          10      LD  DE,V_TIME
+0000F1 01F1 0E6C             7      LD  C,06CH      ;_SENV 環境変数のセット
+0000F3 01F3 CD7DF3          17      CALL    BDOS
                                 
-0000D9 01D9 212B02          10      LD  HL,N_SHELL  ;DOS2の場合はCOMMAND.COMの読み込みに
-0000DC 01DC 113404          10      LD  DE,AT_COMMAND1  ;ファイルハンドルを用いるものに差し替え
-0000DF 01DF 010600          10      LD  BC,6        ;階層ディレクトリに対応の為
-0000E2 01E2 EDB0                    LDIR
-0000E4 01E4 21F304          10      LD  HL,AT_DOS2RELOAD
-0000E7 01E7 11A604          10      LD  DE,AT_DOS1RELOAD
-0000EA 01EA 012F00          10      LD  BC,DOS2RELOAD_-DOS2RELOAD
-0000ED 01ED EDB0                    LDIR
-       01EF                     DOS1:
-0000EF 01EF 110E02          10      LD  DE,TITLE2
-0000F2 01F2 0E09             7      LD  C,9
-0000F4 01F4 CD7DF3          17      CALL    BDOS
-0000F7 01F7 010900          10      LD  BC,9
-0000FA 01FA 212202          10      LD  HL,AUTOEXEC
-0000FD 01FD 118100          10      LD  DE,DTA1+1
-000100 0200 EDB0                    LDIR
-000102 0202 3E09             7      LD  A,9
-000104 0204 2A0100          16      LD  HL,(1)
-000107 0207 2E10             7      LD  L,CBOOT & $FF
-       0209                     JP_HL:
-000109 0209 E9               4      JP  (HL)
-       020A                     TITLE:
-00010A 020A 444F5324                DB  "DOS$"
-       020E                     TITLE2:
-00010E 020E 20666F72204D5358        DB  " for MSX v0.10 Gaku$"
-            2076302E31302047    
+       01F6                     DOS1:
+0000F6 01F6 111502          10      LD  DE,TITLE2
+0000F9 01F9 0E09             7      LD  C,9
+0000FB 01FB CD7DF3          17      CALL    BDOS
+0000FE 01FE 010900          10      LD  BC,9
+000101 0201 212902          10      LD  HL,AUTOEXEC
+000104 0204 118100          10      LD  DE,DTA1+1
+000107 0207 EDB0                    LDIR
+000109 0209 3E09             7      LD  A,9
+00010B 020B 2A0100          16      LD  HL,(1)
+00010E 020E 2E10             7      LD  L,CBOOT & $FF
+       0210                     JP_HL:
+000110 0210 E9               4      JP  (HL)
+       0211                     TITLE:
+000111 0211 444F5324                DB  "DOS$"
+       0215                     TITLE2:
+000115 0215 20666F72204D5358        DB  " for MSX v0.11 Gaku$"
+            2076302E31312047    
             616B7524            
-       0222                     AUTOEXEC:
-000122 0222 4155544F45584543        DB  "AUTOEXEC",0
+       0229                     AUTOEXEC:
+000129 0229 4155544F45584543        DB  "AUTOEXEC",0
             00                  
-       022B                     N_SHELL:
-00012B 022B 5348454C4C00            DB  "SHELL",0
-       0231                     V_SHELL:
-000131 0231 413A5C434F4D4D41        DB  "A:\\COMMAND.COM",0
+       0232                     N_SHELL:
+000132 0232 5348454C4C00            DB  "SHELL",0
+       0238                     V_SHELL:
+000138 0238 413A5C434F4D4D41        DB  "A:\\COMMAND.COM",0
             4E442E434F4D00      
-       0240                     N_DATE:
-000140 0240 4441544500              DB  "DATE",0
-       0245                     V_DATE:
-000145 0245 79792D6D6D2D6464        DB  "yy-mm-dd",0
+       0247                     N_DATE:
+000147 0247 4441544500              DB  "DATE",0
+       024C                     V_DATE:
+00014C 024C 79792D6D6D2D6464        DB  "yy-mm-dd",0
             00                  
-       024E                     N_TIME:
-00014E 024E 54494D4500              DB  "TIME",0
-       0253                     V_TIME:
-000153 0253 323400                  DB  "24",0
-       0256                     Z_TIME:
-       0256                         DS  64
-                                
-       0296                     REAL:
-000196 0004                         ORG 4,REAL-0100H
+       0255                     N_TIME:
+000155 0255 54494D4500              DB  "TIME",0
+       025A                     V_TIME:
+00015A 025A 323400                  DB  "24",0
+       025D                     Z_TIME:
+00015D 025D                         DS  64
+       029D                     ISDOS1:
+00019D 029D 00                      DB  0
+       029E                     REAL:
+00019E 0004                         ORG 4,REAL-0100H
        0004                     MAIN:
-000196 0004 0000                    DW  0
+00019E 0004 0000                    DW  0
        0006                     BDOS0:
-000198 0006 C30900          10      JP  BDOS1
-       0009                     BDOS1:
-00019B 0009 3268F5          13      LD  (SAVE_A),A
-00019E 000C 79               4      LD  A,C
-00019F 000D B7               4      OR  A
-       000E                     WBOOT_:
-0001A0 000E CA0302          10      JP  Z,WBOOT
-0001A3 0011 FE62             7      CP  062H        ;_TERM エラーコードを返して終了
-0001A5 0013 28F9            12      JR  Z,WBOOT_
-0001A7 0015 ED735EF5        20      LD  (SAVE_SP),SP
-0001AB 0019 ED7B69F5        20      LD  SP,(EXTSP)
-0001AF 001D FE09             7      CP  9       ;_STROUT 文字列出力
-       001F                     SYS09_:
-0001B1 001F CA9201          10      JP  Z,_SYS09
-       0022                     BDOS2:
-0001B4 0022 3264F5          13      LD  (SAVE_C),A
-0001B7 0025 FE0F             7      CP  00FH        ;_FOPEN ファイルオープン
-0001B9 0027 385D            12      JR  C,SAVEFCB0
-0001BB 0029 FE12             7      CP  012H        ;_SNEXT ファイル検索 続き
-0001BD 002B 2004            12      JR  NZ,NOBD12
-0001BF 002D ED5B07F3        20      LD  DE,(FCB11)
-       0031                     NOBD12:
-0001C3 0031 FE18             7      CP  018H        ;_LOGIN ログインベクトルの獲得
-0001C5 0033 383E            12      JR  C,SAVEFCB36
-0001C7 0035 FE21             7      CP  021H        ;_RDRND ランダム読み出し
-0001C9 0037 384D            12      JR  C,SAVEFCB0
-0001CB 0039 FE29             7      CP  028H+1      ;_WRZER ゼロ書き込みを伴うランダム書き込み+1
-0001CD 003B 3836            12      JR  C,SAVEFCB36
-0001CF 003D FE31             7      CP  031H        ;_DPARM ディスクパラメータの獲得
-0001D1 003F 2832            12      JR  Z,SAVEFCB36
-0001D3 0041 FE40             7      CP  040H        ;_FFIRST 最初のエントリ検索
-0001D5 0043 282E            12      JR  Z,SAVE_PATH
-0001D7 0045 FE42             7      CP  042H        ;_FNEW 新しいエントリの検索
-0001D9 0047 282A            12      JR  Z,SAVE_PATH
-0001DB 0049 FE43             7      CP  043H        ;_OPEN ファイルハンドルのオープン
-0001DD 004B 2826            12      JR  Z,SAVE_PATH
-0001DF 004D FE44             7      CP  044H        ;_CREATE ファイルハンドルの作成
-0001E1 004F 2822            12      JR  Z,SAVE_PATH
-0001E3 0051 FE4C             7      CP  04CH        ;_HTEST ファイルハンドルの検査
-0001E5 0053 281E            12      JR  Z,SAVE_PATH
-0001E7 0055 FE50             7      CP  050H        ;_ATTR ファイル属性の獲得・設定
-0001E9 0057 281A            12      JR  Z,SAVE_PATH
-0001EB 0059 FE51             7      CP  051H        ;_FTIME ファイルの日付および時刻の獲得・設定
-0001ED 005B 2816            12      JR  Z,SAVE_PATH
-0001EF 005D FE59             7      CP  059H        ;_GETCD カレントディレクトリの獲得
-0001F1 005F 2812            12      JR  Z,SAVE_PATH
-0001F3 0061 FE5B             7      CP  05BH        ;_PARSE パス名の解析
-0001F5 0063 280E            12      JR  Z,SAVE_PATH
-0001F7 0065 FE5C             7      CP  05CH        ;_PFILE ファイル名の解析
-0001F9 0067 280A            12      JR  Z,SAVE_PATH
-0001FB 0069 FE5E             7      CP  05EH        ;_WPATH パス文字列全体の獲得
-0001FD 006B 2806            12      JR  Z,SAVE_PATH
-0001FF 006D FE66             7      CP  066H        ;_EXPLAIN エラーコードの説明
-000201 006F 2802            12      JR  Z,SAVE_PATH
-000203 0071 1813            12      JR  SAVEFCB0
-       0073                     SAVEFCB36:
-       0073                     SAVE_PATH:
-000205 0073 7A               4      LD  A,D
-000206 0074 FE3F             7      CP  03FH        ;ページ1にかぶる？
-000208 0076 380E            12      JR  C,SAVEFCB0
-00020A 0078 FE80             7      CP  080H
-00020C 007A 300A            12      JR  NC,SAVEFCB0
-00020E 007C 3E24             7      LD  A,36
-000210 007E CB71             8      BIT 6,C     ;DOS2のファンクションコール？
-000212 0080 2805            12      JR  Z,SAVEFCB1
-000214 0082 3E40             7      LD  A,64        ;DOS2CALLは64バイト設定する
-000216 0084 1801            12      JR  SAVEFCB1
-       0086                     SAVEFCB0:
-000218 0086 AF               4      XOR A
-       0087                     SAVEFCB1:
-000219 0087 3265F5          13      LD  (DE_MEM_SIZE),A
-00021C 008A B7               4      OR  A
-00021D 008B 2815            12      JR  Z,BDOS3
-00021F 008D C5              11      PUSH    BC
-000220 008E E5              11      PUSH    HL
-000221 008F ED5360F5        20      LD  (SAVE_DE),DE
-000225 0093 4F               4      LD  C,A
-000226 0094 0600             7      LD  B,0
-000228 0096 211FF4          10      LD  HL,ALT_MEM
-00022B 0099 EB               4      EX  DE,HL
-00022C 009A D5              11      PUSH    DE
-00022D 009B EDB0                    LDIR
-00022F 009D AF               4      XOR A
-000230 009E 12               7      LD  (DE),A
-000231 009F D1              10      POP DE
-000232 00A0 E1              10      POP HL
-000233 00A1 C1              10      POP BC
-       00A2                     BDOS3:
-000234 00A2 AF               4      XOR A
-000235 00A3 3263F5          13      LD  (SAVE_IX+1),A
-000238 00A6 79               4      LD  A,C
-000239 00A7 FE40             7      CP  040H        ;最初のエントリ検索
-00023B 00A9 3826            12      JR  C,BDOS3IX   ;次のエントリ検索
-00023D 00AB FE43             7      CP  042H+1      ;新しいエントリの検索
-00023F 00AD 3022            12      JR  NC,BDOS3IX
-000241 00AF DD7C             9      LD  A,IXH
-000243 00B1 FE3F             7      CP  03FH        ;ページ1にかぶる？
-000245 00B3 381C            12      JR  C,BDOS3IX
-000247 00B5 FE80             7      CP  080H        ;
-000249 00B7 3018            12      JR  NC,BDOS3IX
-00024B 00B9 DD2262F5        20      LD  (SAVE_IX),IX
-00024F 00BD C5              11      PUSH    BC
-000250 00BE D5              11      PUSH    DE
-000251 00BF E5              11      PUSH    HL
-000252 00C0 DDE5            15      PUSH    IX
-000254 00C2 E1              10      POP HL
-000255 00C3 115FF4          10      LD  DE,ALT_MEM2
-000258 00C6 014000          10      LD  BC,64
-00025B 00C9 D5              11      PUSH    DE
-00025C 00CA EDB0                    LDIR
-00025E 00CC DDE1            14      POP IX
-000260 00CE E1              10      POP HL
-000261 00CF D1              10      POP DE
-000262 00D0 C1              10      POP BC
-       00D1                     BDOS3IX:
-000263 00D1 AF               4      XOR A
-000264 00D2 3267F5          13      LD  (SAVE_HL+1),A
-000267 00D5 79               4      LD  A,C
-000268 00D6 FE52             7      CP  052H        ;_HDELETE ファイルハンドルの削除
-00026A 00D8 2810            12      JR  Z,SAVE_HL1
-00026C 00DA FE5C             7      CP  05CH        ;_PFILE ファイル名の解析
-00026E 00DC 280C            12      JR  Z,SAVE_HL1
-000270 00DE FE40             7      CP  040H        ;_FFIRST 最初のエントリ検索
-000272 00E0 2804            12      JR  Z,FIBCHECK
-000274 00E2 FE42             7      CP  042H        ;_FNEW 新しいエントリ検索
-000276 00E4 201F            12      JR  NZ,BDOS3HL
-       00E6                     FIBCHECK:
-000278 00E6 1A               7      LD  A,(DE)
-000279 00E7 3C               4      INC A       ;DEがFIBならば0FFH
-00027A 00E8 201B            12      JR  NZ,BDOS3HL
-       00EA                     SAVE_HL1:
-00027C 00EA 7C               4      LD  A,H
-00027D 00EB FE3F             7      CP  03FH        ;ページ1にかぶる？
-00027F 00ED 3816            12      JR  C,BDOS3HL
-000281 00EF FE80             7      CP  080H        ;
-000283 00F1 3012            12      JR  NC,BDOS3HL
-000285 00F3 2266F5          16      LD  (SAVE_HL),HL
-000288 00F6 C5              11      PUSH    BC
-000289 00F7 D5              11      PUSH    DE
-00028A 00F8 010B00          10      LD  BC,11
-00028D 00FB 119FF4          10      LD  DE,ALT_MEM3
-000290 00FE EDB0                    LDIR
-000292 0100 D1              10      POP DE
-000293 0101 C1              10      POP BC
-000294 0102 219FF4          10      LD  HL,ALT_MEM3
-       0105                     BDOS3HL:
-000297 0105 3A68F5          13      LD  A,(SAVE_A)
-00029A 0108 CD7DF3          17      CALL    BDOS
+0001A0 0006 C31500          10      JP  BDOS1
+       0009                     TERM:
+0001A3 0009 2A6BF5          16      LD  HL,(DEFAB)
+0001A6 000C 110000          10      LD  DE,0
+0001A9 000F ED536BF5        20      LD  (DEFAB),DE
+0001AD 0013 D5              11      PUSH    DE
+0001AE 0014 E9               4      JP  (HL)
+       0015                     BDOS1:
+0001AF 0015 3268F5          13      LD  (SAVE_A),A
+0001B2 0018 79               4      LD  A,C
+0001B3 0019 B7               4      OR  A
+0001B4 001A CA0000          10      JP  Z,0
+0001B7 001D FE62             7      CP  062H        ;_TERM エラーコードを返して終了
+0001B9 001F 28E8            12      JR  Z,TERM
+0001BB 0021 ED735EF5        20      LD  (SAVE_SP),SP
+0001BF 0025 ED7B69F5        20      LD  SP,(EXTSP)
+0001C3 0029 FE09             7      CP  9       ;_STROUT 文字列出力
+       002B                     SYS09_:
+0001C5 002B CAA601          10      JP  Z,_SYS09
+0001C8 002E FE63             7      CP  063H        ;_DEFAB アボート終了ルーチンの定義
+0001CA 0030 2004            12      JR  NZ,BDOS2
+0001CC 0032 ED536BF5        20      LD  (DEFAB),DE
+       0036                     BDOS2:
+0001D0 0036 3264F5          13      LD  (SAVE_C),A
+0001D3 0039 FE0F             7      CP  00FH        ;_FOPEN ファイルオープン
+0001D5 003B 385D            12      JR  C,SAVEFCB0
+0001D7 003D FE12             7      CP  012H        ;_SNEXT ファイル検索 続き
+0001D9 003F 2004            12      JR  NZ,NOBD12
+0001DB 0041 ED5B07F3        20      LD  DE,(FCB11)
+       0045                     NOBD12:
+0001DF 0045 FE18             7      CP  018H        ;_LOGIN ログインベクトルの獲得
+0001E1 0047 383E            12      JR  C,SAVEFCB36
+0001E3 0049 FE21             7      CP  021H        ;_RDRND ランダム読み出し
+0001E5 004B 384D            12      JR  C,SAVEFCB0
+0001E7 004D FE29             7      CP  028H+1      ;_WRZER ゼロ書き込みを伴うランダム書き込み+1
+0001E9 004F 3836            12      JR  C,SAVEFCB36
+0001EB 0051 FE31             7      CP  031H        ;_DPARM ディスクパラメータの獲得
+0001ED 0053 2832            12      JR  Z,SAVEFCB36
+0001EF 0055 FE40             7      CP  040H        ;_FFIRST 最初のエントリ検索
+0001F1 0057 282E            12      JR  Z,SAVE_PATH
+0001F3 0059 FE42             7      CP  042H        ;_FNEW 新しいエントリの検索
+0001F5 005B 282A            12      JR  Z,SAVE_PATH
+0001F7 005D FE43             7      CP  043H        ;_OPEN ファイルハンドルのオープン
+0001F9 005F 2826            12      JR  Z,SAVE_PATH
+0001FB 0061 FE44             7      CP  044H        ;_CREATE ファイルハンドルの作成
+0001FD 0063 2822            12      JR  Z,SAVE_PATH
+0001FF 0065 FE4C             7      CP  04CH        ;_HTEST ファイルハンドルの検査
+000201 0067 281E            12      JR  Z,SAVE_PATH
+000203 0069 FE50             7      CP  050H        ;_ATTR ファイル属性の獲得・設定
+000205 006B 281A            12      JR  Z,SAVE_PATH
+000207 006D FE51             7      CP  051H        ;_FTIME ファイルの日付および時刻の獲得・設定
+000209 006F 2816            12      JR  Z,SAVE_PATH
+00020B 0071 FE59             7      CP  059H        ;_GETCD カレントディレクトリの獲得
+00020D 0073 2812            12      JR  Z,SAVE_PATH
+00020F 0075 FE5B             7      CP  05BH        ;_PARSE パス名の解析
+000211 0077 280E            12      JR  Z,SAVE_PATH
+000213 0079 FE5C             7      CP  05CH        ;_PFILE ファイル名の解析
+000215 007B 280A            12      JR  Z,SAVE_PATH
+000217 007D FE5E             7      CP  05EH        ;_WPATH パス文字列全体の獲得
+000219 007F 2806            12      JR  Z,SAVE_PATH
+00021B 0081 FE66             7      CP  066H        ;_EXPLAIN エラーコードの説明
+00021D 0083 2802            12      JR  Z,SAVE_PATH
+00021F 0085 1813            12      JR  SAVEFCB0
+       0087                     SAVEFCB36:
+       0087                     SAVE_PATH:
+000221 0087 7A               4      LD  A,D
+000222 0088 FE3F             7      CP  03FH        ;ページ1にかぶる？
+000224 008A 380E            12      JR  C,SAVEFCB0
+000226 008C FE80             7      CP  080H
+000228 008E 300A            12      JR  NC,SAVEFCB0
+00022A 0090 3E24             7      LD  A,36
+00022C 0092 CB71             8      BIT 6,C     ;DOS2のファンクションコール？
+00022E 0094 2805            12      JR  Z,SAVEFCB1
+000230 0096 3E40             7      LD  A,64        ;DOS2CALLは64バイト設定する
+000232 0098 1801            12      JR  SAVEFCB1
+       009A                     SAVEFCB0:
+000234 009A AF               4      XOR A
+       009B                     SAVEFCB1:
+000235 009B 3265F5          13      LD  (DE_MEM_SIZE),A
+000238 009E B7               4      OR  A
+000239 009F 2815            12      JR  Z,BDOS3
+00023B 00A1 C5              11      PUSH    BC
+00023C 00A2 E5              11      PUSH    HL
+00023D 00A3 ED5360F5        20      LD  (SAVE_DE),DE
+000241 00A7 4F               4      LD  C,A
+000242 00A8 0600             7      LD  B,0
+000244 00AA 211FF4          10      LD  HL,ALT_MEM
+000247 00AD EB               4      EX  DE,HL
+000248 00AE D5              11      PUSH    DE
+000249 00AF EDB0                    LDIR
+00024B 00B1 AF               4      XOR A
+00024C 00B2 12               7      LD  (DE),A
+00024D 00B3 D1              10      POP DE
+00024E 00B4 E1              10      POP HL
+00024F 00B5 C1              10      POP BC
+       00B6                     BDOS3:
+000250 00B6 AF               4      XOR A
+000251 00B7 3263F5          13      LD  (SAVE_IX+1),A
+000254 00BA 79               4      LD  A,C
+000255 00BB FE40             7      CP  040H        ;最初のエントリ検索
+000257 00BD 3826            12      JR  C,BDOS3IX   ;次のエントリ検索
+000259 00BF FE43             7      CP  042H+1      ;新しいエントリの検索
+00025B 00C1 3022            12      JR  NC,BDOS3IX
+00025D 00C3 DD7C             9      LD  A,IXH
+00025F 00C5 FE3F             7      CP  03FH        ;ページ1にかぶる？
+000261 00C7 381C            12      JR  C,BDOS3IX
+000263 00C9 FE80             7      CP  080H        ;
+000265 00CB 3018            12      JR  NC,BDOS3IX
+000267 00CD DD2262F5        20      LD  (SAVE_IX),IX
+00026B 00D1 C5              11      PUSH    BC
+00026C 00D2 D5              11      PUSH    DE
+00026D 00D3 E5              11      PUSH    HL
+00026E 00D4 DDE5            15      PUSH    IX
+000270 00D6 E1              10      POP HL
+000271 00D7 115FF4          10      LD  DE,ALT_MEM2
+000274 00DA 014000          10      LD  BC,64
+000277 00DD D5              11      PUSH    DE
+000278 00DE EDB0                    LDIR
+00027A 00E0 DDE1            14      POP IX
+00027C 00E2 E1              10      POP HL
+00027D 00E3 D1              10      POP DE
+00027E 00E4 C1              10      POP BC
+       00E5                     BDOS3IX:
+00027F 00E5 AF               4      XOR A
+000280 00E6 3267F5          13      LD  (SAVE_HL+1),A
+000283 00E9 79               4      LD  A,C
+000284 00EA FE52             7      CP  052H        ;_HDELETE ファイルハンドルの削除
+000286 00EC 2810            12      JR  Z,SAVE_HL1
+000288 00EE FE5C             7      CP  05CH        ;_PFILE ファイル名の解析
+00028A 00F0 280C            12      JR  Z,SAVE_HL1
+00028C 00F2 FE40             7      CP  040H        ;_FFIRST 最初のエントリ検索
+00028E 00F4 2804            12      JR  Z,FIBCHECK
+000290 00F6 FE42             7      CP  042H        ;_FNEW 新しいエントリ検索
+000292 00F8 201F            12      JR  NZ,BDOS3HL
+       00FA                     FIBCHECK:
+000294 00FA 1A               7      LD  A,(DE)
+000295 00FB 3C               4      INC A       ;DEがFIBならば0FFH
+000296 00FC 201B            12      JR  NZ,BDOS3HL
+       00FE                     SAVE_HL1:
+000298 00FE 7C               4      LD  A,H
+000299 00FF FE3F             7      CP  03FH        ;ページ1にかぶる？
+00029B 0101 3816            12      JR  C,BDOS3HL
+00029D 0103 FE80             7      CP  080H        ;
+00029F 0105 3012            12      JR  NC,BDOS3HL
+0002A1 0107 2266F5          16      LD  (SAVE_HL),HL
+0002A4 010A C5              11      PUSH    BC
+0002A5 010B D5              11      PUSH    DE
+0002A6 010C 010B00          10      LD  BC,11
+0002A9 010F 119FF4          10      LD  DE,ALT_MEM3
+0002AC 0112 EDB0                    LDIR
+0002AE 0114 D1              10      POP DE
+0002AF 0115 C1              10      POP BC
+0002B0 0116 219FF4          10      LD  HL,ALT_MEM3
+       0119                     BDOS3HL:
+0002B3 0119 3A68F5          13      LD  A,(SAVE_A)
+0002B6 011C CD7DF3          17      CALL    BDOS
                                 
-00029D 010B F5              11      PUSH    AF
+0002B9 011F F5              11      PUSH    AF
                                 
-00029E 010C 3A63F5          13      LD  A,(SAVE_IX+1)       ;最初のエントリ検索 + 次のエントリ検索
-0002A1 010F B7               4      OR  A
-0002A2 0110 2815            12      JR  Z,BDOS4IX
-0002A4 0112 DD2A62F5        20      LD  IX,(SAVE_IX)
-0002A8 0116 C5              11      PUSH    BC
-0002A9 0117 D5              11      PUSH    DE
-0002AA 0118 E5              11      PUSH    HL
-0002AB 0119 DDE5            15      PUSH    IX
-0002AD 011B D1              10      POP DE
-0002AE 011C 215FF4          10      LD  HL,ALT_MEM2
-0002B1 011F 014000          10      LD  BC,64
-0002B4 0122 EDB0                    LDIR
-0002B6 0124 E1              10      POP HL
-0002B7 0125 D1              10      POP DE
-0002B8 0126 C1              10      POP BC
-       0127                     BDOS4IX:
-0002B9 0127 3A65F5          13      LD  A,(DE_MEM_SIZE)
-0002BC 012A B7               4      OR  A
-0002BD 012B 2812            12      JR  Z,BDOS4
-0002BF 012D C5              11      PUSH    BC
-0002C0 012E D5              11      PUSH    DE
-0002C1 012F E5              11      PUSH    HL
-0002C2 0130 4F               4      LD  C,A
-0002C3 0131 0600             7      LD  B,0
-0002C5 0133 211FF4          10      LD  HL,ALT_MEM
-0002C8 0136 ED5B60F5        20      LD  DE,(SAVE_DE)
-0002CC 013A EDB0                    LDIR
-0002CE 013C E1              10      POP HL
-0002CF 013D D1              10      POP DE
-0002D0 013E C1              10      POP BC
-       013F                     BDOS4:
-0002D1 013F 3A67F5          13      LD  A,(SAVE_HL+1)
-0002D4 0142 B7               4      OR  A
-0002D5 0143 2812            12      JR  Z,BDOS5
-0002D7 0145 C5              11      PUSH    BC
-0002D8 0146 D5              11      PUSH    DE
-0002D9 0147 E5              11      PUSH    HL
-0002DA 0148 010B00          10      LD  BC,11
-0002DD 014B 219FF4          10      LD  HL,ALT_MEM3
-0002E0 014E ED5B66F5        20      LD  DE,(SAVE_HL)
-0002E4 0152 EDB0                    LDIR
-0002E6 0154 E1              10      POP HL
-0002E7 0155 D1              10      POP DE
-0002E8 0156 C1              10      POP BC
-       0157                     BDOS5:
-0002E9 0157 3A65F5          13      LD  A,(DE_MEM_SIZE)
-0002EC 015A 2820            12      JR  Z,BDOS6
-0002EE 015C 3A64F5          13      LD  A,(SAVE_C)
-0002F1 015F FE5B             7      CP  05BH        ;_PARSE パス名の解析
-0002F3 0161 2019            12      JR  NZ,BDOS6
-0002F5 0163 C5              11      PUSH    BC
-0002F6 0164 011FF4          10      LD  BC,ALT_MEM
-0002F9 0167 ED42            15      SBC HL,BC       ;CF=0のハズ
-0002FB 0169 ED4B60F5        20      LD  BC,(SAVE_DE)
-0002FF 016D 09              11      ADD HL,BC
-000300 016E EB               4      EX  DE,HL
-000301 016F 011FF4          10      LD  BC,ALT_MEM
-000304 0172 A7               4      AND A       ;念のためにCF=0にする
-000305 0173 ED42            15      SBC HL,BC
-000307 0175 ED4B60F5        20      LD  BC,(SAVE_DE)
-00030B 0179 09              11      ADD HL,BC
-00030C 017A EB               4      EX  DE,HL
-00030D 017B C1              10      POP BC
-       017C                     BDOS6:
-00030E 017C F1              10      POP AF
-       017D                     S09X1:
-00030F 017D ED7B5EF5        20      LD  SP,(SAVE_SP)
-000313 0181 C9              10      RET
+0002BA 0120 3A63F5          13      LD  A,(SAVE_IX+1)       ;最初のエントリ検索 + 次のエントリ検索
+0002BD 0123 B7               4      OR  A
+0002BE 0124 2815            12      JR  Z,BDOS4IX
+0002C0 0126 DD2A62F5        20      LD  IX,(SAVE_IX)
+0002C4 012A C5              11      PUSH    BC
+0002C5 012B D5              11      PUSH    DE
+0002C6 012C E5              11      PUSH    HL
+0002C7 012D DDE5            15      PUSH    IX
+0002C9 012F D1              10      POP DE
+0002CA 0130 215FF4          10      LD  HL,ALT_MEM2
+0002CD 0133 014000          10      LD  BC,64
+0002D0 0136 EDB0                    LDIR
+0002D2 0138 E1              10      POP HL
+0002D3 0139 D1              10      POP DE
+0002D4 013A C1              10      POP BC
+       013B                     BDOS4IX:
+0002D5 013B 3A65F5          13      LD  A,(DE_MEM_SIZE)
+0002D8 013E B7               4      OR  A
+0002D9 013F 2812            12      JR  Z,BDOS4
+0002DB 0141 C5              11      PUSH    BC
+0002DC 0142 D5              11      PUSH    DE
+0002DD 0143 E5              11      PUSH    HL
+0002DE 0144 4F               4      LD  C,A
+0002DF 0145 0600             7      LD  B,0
+0002E1 0147 211FF4          10      LD  HL,ALT_MEM
+0002E4 014A ED5B60F5        20      LD  DE,(SAVE_DE)
+0002E8 014E EDB0                    LDIR
+0002EA 0150 E1              10      POP HL
+0002EB 0151 D1              10      POP DE
+0002EC 0152 C1              10      POP BC
+       0153                     BDOS4:
+0002ED 0153 3A67F5          13      LD  A,(SAVE_HL+1)
+0002F0 0156 B7               4      OR  A
+0002F1 0157 2812            12      JR  Z,BDOS5
+0002F3 0159 C5              11      PUSH    BC
+0002F4 015A D5              11      PUSH    DE
+0002F5 015B E5              11      PUSH    HL
+0002F6 015C 010B00          10      LD  BC,11
+0002F9 015F 219FF4          10      LD  HL,ALT_MEM3
+0002FC 0162 ED5B66F5        20      LD  DE,(SAVE_HL)
+000300 0166 EDB0                    LDIR
+000302 0168 E1              10      POP HL
+000303 0169 D1              10      POP DE
+000304 016A C1              10      POP BC
+       016B                     BDOS5:
+000305 016B 3A65F5          13      LD  A,(DE_MEM_SIZE)
+000308 016E 2820            12      JR  Z,BDOS6
+00030A 0170 3A64F5          13      LD  A,(SAVE_C)
+00030D 0173 FE5B             7      CP  05BH        ;_PARSE パス名の解析
+00030F 0175 2019            12      JR  NZ,BDOS6
+000311 0177 C5              11      PUSH    BC
+000312 0178 011FF4          10      LD  BC,ALT_MEM
+000315 017B ED42            15      SBC HL,BC       ;CF=0のハズ
+000317 017D ED4B60F5        20      LD  BC,(SAVE_DE)
+00031B 0181 09              11      ADD HL,BC
+00031C 0182 EB               4      EX  DE,HL
+00031D 0183 011FF4          10      LD  BC,ALT_MEM
+000320 0186 A7               4      AND A       ;念のためにCF=0にする
+000321 0187 ED42            15      SBC HL,BC
+000323 0189 ED4B60F5        20      LD  BC,(SAVE_DE)
+000327 018D 09              11      ADD HL,BC
+000328 018E EB               4      EX  DE,HL
+000329 018F C1              10      POP BC
+       0190                     BDOS6:
+00032A 0190 F1              10      POP AF
+       0191                     S09X1:
+00032B 0191 ED7B5EF5        20      LD  SP,(SAVE_SP)
+00032F 0195 C9              10      RET
                                 
-       0182                     CONST1:
-000314 0182 0E0B             7      LD  C,0BH
-000316 0184 C30500          10      JP  SYSTEM
-       0187                     CONIN1:
-000319 0187 0E07             7      LD  C,7
-00031B 0189 C30500          10      JP  SYSTEM
-       018C                     CONOUT1:
-00031E 018C 59               4      LD  E,C
-00031F 018D 0E02             7      LD  C,2
-000321 018F C30500          10      JP  SYSTEM
+       0196                     CONST1:
+000330 0196 0E0B             7      LD  C,0BH
+000332 0198 C30500          10      JP  SYSTEM
+       019B                     CONIN1:
+000335 019B 0E07             7      LD  C,7
+000337 019D C30500          10      JP  SYSTEM
+       01A0                     CONOUT1:
+00033A 01A0 59               4      LD  E,C
+00033B 01A1 0E02             7      LD  C,2
+00033D 01A3 C30500          10      JP  SYSTEM
                                 
-       0192                     _SYS09:     ;_STROUT 文字列出力
-000324 0192 1A               7      LD  A,(DE)
-000325 0193 13               6      INC DE
-000326 0194 FE24             7      CP  '$'
-000328 0196 28E5            12      JR  Z,S09X1
-00032A 0198 D5              11      PUSH    DE
-00032B 0199 0E02             7      LD  C,2
-00032D 019B 5F               4      LD  E,A
-00032E 019C CD7DF3          17      CALL    BDOS
-000331 019F D1              10      POP DE
-000332 01A0 18F0            12      JR  _SYS09
+       01A6                     _SYS09:     ;_STROUT 文字列出力
+000340 01A6 1A               7      LD  A,(DE)
+000341 01A7 13               6      INC DE
+000342 01A8 FE24             7      CP  '$'
+000344 01AA 28E5            12      JR  Z,S09X1
+000346 01AC D5              11      PUSH    DE
+000347 01AD 0E02             7      LD  C,2
+000349 01AF 5F               4      LD  E,A
+00034A 01B0 CD7DF3          17      CALL    BDOS
+00034D 01B3 D1              10      POP DE
+00034E 01B4 18F0            12      JR  _SYS09
                                 
-       01A2                     FCBCMD:
-       0434                         ORG $$+0100H    ;$DEPHASE
-       0434                     AT_COMMAND1:
-000334 01A2                         ORG FCBCMD,AT_COMMAND1-0100H
-000334 01A2 00434F4D4D414E44        DB  0,"COMMAND COM",0,0,0,0
+       01B6                     FCBCMD:
+       0450                         ORG $$+0100H    ;$DEPHASE
+       0450                     AT_COMMAND1:
+000350 01B6                         ORG FCBCMD,AT_COMMAND1-0100H
+000350 01B6 00434F4D4D414E44        DB  0,"COMMAND COM",0,0,0,0
             20434F4D00000000    
                                 
-       01B2                     ERROR:
-000344 01B2 0D0A496E73657274        DB  00DH,00AH,"Insert System disk$"
-            2053797374656D20    
-            6469736B24          
+       01C6                     ERROR:
+000360 01C6 0D0A496E73657274        DB  00DH,00AH,"Insert System$"
+            2053797374656D24    
                                 
-       01C7                     AT:
-000359 01C7                         DS  0200H-37-AT
+       01D6                     AT:
+000370 01D6                         DS  0200H-37-AT
        01DB                     FCB_BAT:
-00036D 01DB                         DS  37          ;バッチファイル用のFCB
+000375 01DB                         DS  37          ;バッチファイル用のFCB
                                 ;           下位1バイト0になるように
        0200                     BOOT:
-000392 0200 C30F02          10      JP  WBOOT1
+00039A 0200 C30F02          10      JP  WBOOT1
        0203                     WBOOT:
-000395 0203 C30F02          10      JP  WBOOT1
+00039D 0203 C30F02          10      JP  WBOOT1
        0206                     CONST_:         ;(BDOS)コンソール直接入力
-000398 0206 C38201          10      JP  CONST1
+0003A0 0206 C39601          10      JP  CONST1
        0209                     CONIN:
-00039B 0209 C38701          10      JP  CONIN1
+0003A3 0209 C39B01          10      JP  CONIN1
        020C                     CONOUT:
-00039E 020C C38C01          10      JP  CONOUT1
+0003A6 020C C3A001          10      JP  CONOUT1
                                 
        020F                     WBOOT1:
-0003A1 020F AF               4      XOR A
+0003A9 020F AF               4      XOR A
        0210                     CBOOT:
-0003A2 0210 F5              11      PUSH    AF
-0003A3 0211 21A201          10  FCBPAT: LD  HL,FCBCMD
-       0214                     DOS1RELOAD:
-       04A6                         ORG $$+0100H    ;$DEPHASE
-       04A6                     AT_DOS1RELOAD:
-0003A6 0214                         ORG DOS1RELOAD,AT_DOS1RELOAD-0100H
-0003A6 0214 115C00          10      LD  DE,FCB1
-0003A9 0217 011000          10      LD  BC,16
-0003AC 021A EDB0                    LDIR
+0003AA 0210 328000          13      LD  (DTA1),A
+       0213                     RELOAD:
+0003AD 0213 21B601          10  FCBPAT: LD  HL,FCBCMD
+       0216                     DOS1RELOAD:
+       04B0                     AT_DOS1RELOAD   EQU $$+0100H
+0003B0 0216 115C00          10      LD  DE,FCB1
+0003B3 0219 011000          10      LD  BC,16
+0003B6 021C EDB0                    LDIR
                                 
-0003AE 021C 115C00          10      LD  DE,FCB1
-0003B1 021F 0E0F             7      LD  C,00FH      ;(BDOS)_FOPEN ファイルオープン
-0003B3 0221 CD7DF3          17      CALL    BDOS
-0003B6 0224 B7               4      OR  A
-0003B7 0225 2029            12      JR  NZ,SHOW_ERROR
-0003B9 0227 210000          10      LD  HL,0
-0003BC 022A 227D00          16      LD  (FCB1+33),HL
-0003BF 022D 227F00          16      LD  (FCB1+35),HL
-0003C2 0230 2C               4      INC L
-0003C3 0231 226A00          16      LD  (FCB1+14),HL
+0003B8 021E 115C00          10      LD  DE,FCB1
+0003BB 0221 0E0F             7      LD  C,00FH      ;(BDOS)_FOPEN ファイルオープン
+0003BD 0223 CD7DF3          17      CALL    BDOS
+0003C0 0226 B7               4      OR  A
+0003C1 0227 2025            12      JR  NZ,SHOW_ERROR
+0003C3 0229 210000          10      LD  HL,0
+0003C6 022C 227D00          16      LD  (FCB1+33),HL
+0003C9 022F 227F00          16      LD  (FCB1+35),HL
+0003CC 0232 2C               4      INC L
+0003CD 0233 226A00          16      LD  (FCB1+14),HL
                                 
-0003C6 0234 110001          10      LD  DE,00100H
-0003C9 0237 0E1A             7      LD  C,01AH      ;(BDOS)DTAの設定
-0003CB 0239 CD7DF3          17      CALL    BDOS
+0003D0 0236 110001          10      LD  DE,00100H
+0003D3 0239 0E1A             7      LD  C,01AH      ;(BDOS)DTAの設定
+0003D5 023B CD7DF3          17      CALL    BDOS
                                 
-0003CE 023C 115C00          10      LD  DE,FCB1
-0003D1 023F 2100BF          10      LD  HL,0BF00H
-0003D4 0242 0E27             7      LD  C,027H      ;(BDOS)ランダムブロックリード
-0003D6 0244 CD7DF3          17      CALL    BDOS
-       0247                     READOK:
-0003D9 0247 F1              10      POP AF
-0003DA 0248 328000          13      LD  (DTA1),A
-0003DD 024B 7C               4      LD  A,H
-0003DE 024C B5               4      OR  L
+0003D8 023E 115C00          10      LD  DE,FCB1
+0003DB 0241 2100BF          10      LD  HL,0BF00H
+0003DE 0244 0E27             7      LD  C,027H      ;(BDOS)ランダムブロックリード
+0003E0 0246 CD7DF3          17      CALL    BDOS
+       0249                     READOK:
+0003E3 0249 7C               4      LD  A,H
+0003E4 024A B5               4      OR  L
                                 
-0003DF 024D C20001          10      JP  NZ,0100H
-       0250                     SHOW_ERROR:
-0003E2 0250 11B201          10      LD  DE,ERROR
-0003E5 0253 0E09             7      LD  C,9
-0003E7 0255 CD7DF3          17      CALL    BDOS
-0003EA 0258 0E08             7      LD  C,8
-0003EC 025A CD7DF3          17      CALL    BDOS
-0003EF 025D AF               4      XOR A
-0003F0 025E 24               4      INC H
-0003F1 025F 18B3            12      JR  DOS1RELOAD
+0003E5 024B C20001          10      JP  NZ,0100H
+       024E                     SHOW_ERROR:
+0003E8 024E 11C601          10      LD  DE,ERROR
+0003EB 0251 0E09             7      LD  C,9
+0003ED 0253 CD7DF3          17      CALL    BDOS
+0003F0 0256 0E08             7      LD  C,8
+0003F2 0258 CD7DF3          17      CALL    BDOS
+0003F5 025B AF               4      XOR A
+0003F6 025C 24               4      INC H
+0003F7 025D 18B4            12      JR  RELOAD
                                 
-       0261                     MAIN_END:
-       04F3                         ORG $$+0100H    ;$DEPHASE
-       04F3                     AT_DOS2RELOAD:
-0003F3 0214                         ORG DOS1RELOAD,AT_DOS2RELOAD-0100H
-       0214                     DOS2RELOAD:
-0003F3 0214 111FF4          10      LD  DE,ALT_MEM  ;HLは"SHELL"のポインタ
-0003F6 0217 0640             7      LD  B,64
-0003F8 0219 0E6B             7      LD  C,06BH      ;_GENV 環境変数の獲得
-0003FA 021B CD7DF3          17      CALL    BDOS
-0003FD 021E B7               4      OR  A
-0003FE 021F 202F            12      JR  NZ,SHOW_ERROR
-000400 0221 111FF4          10      LD  DE,ALT_MEM
-000403 0224 AF               4      XOR A
-000404 0225 0E43             7      LD  C,043H      ;_OPEN ファイルハンドルのオープン
-000406 0227 CD7DF3          17      CALL    BDOS
-000409 022A B7               4      OR  A
-00040A 022B 2023            12      JR  NZ,SHOW_ERROR
-00040C 022D C5              11      PUSH    BC
-00040D 022E 110001          10      LD  DE,00100H
-000410 0231 2100BF          10      LD  HL,0BF00H
-000413 0234 0E48             7      LD  C,48H       ;_READ ファイルハンドルからの読み出し
-000415 0236 C1              10      POP BC
-000416 0237 B7               4      OR  A
-000417 0238 2016            12      JR  NZ,SHOW_ERROR
-000419 023A E5              11      PUSH    HL
-00041A 023B 0E45             7      LD  C,45H       ;_CLOSE ファイルハンドルのクローズ
-00041C 023D CD7DF3          17      CALL    BDOS
-00041F 0240 E1              10      POP HL
-000420 0241 1804            12      JR  READOK
-       0243                     DOS2RELOAD_:
-       0522                         ORG $$+0100H    ;$DEPHASE
+       025F                     MAIN_END:
+       04F9                         ORG $$+0100H    ;$DEPHASE
+       04F9                     AT_DOS2RELOAD:
+0003F9 0216                         ORG DOS1RELOAD,AT_DOS2RELOAD-0100H
+       0216                     DOS2RELOAD:
+0003F9 0216 23               6      INC HL      ;HLは"SHELL"のポインタ
+0003FA 0217 111FF4          10      LD  DE,ALT_MEM
+0003FD 021A 0640             7      LD  B,64
+0003FF 021C 0E6B             7      LD  C,06BH      ;_GENV 環境変数の獲得
+000401 021E CD7DF3          17      CALL    BDOS
+000404 0221 111FF4          10      LD  DE,ALT_MEM
+000407 0224 AF               4      XOR A
+000408 0225 0E43             7      LD  C,043H      ;_OPEN ファイルハンドルのオープン
+00040A 0227 CD7DF3          17      CALL    BDOS
+00040D 022A B7               4      OR  A
+00040E 022B 2021            12      JR  NZ,SHOW_ERROR
+000410 022D C5              11      PUSH    BC
+000411 022E 110001          10      LD  DE,00100H
+000414 0231 2100BF          10      LD  HL,0BF00H
+000417 0234 0E48             7      LD  C,48H       ;_READ ファイルハンドルからの読み出し
+000419 0236 CD7DF3          17      CALL    BDOS
+00041C 0239 C1              10      POP BC
+00041D 023A B7               4      OR  A
+00041E 023B 2011            12      JR  NZ,SHOW_ERROR
+000420 023D E5              11      PUSH    HL
+000421 023E 0E45             7      LD  C,45H       ;_CLOSE ファイルハンドルのクローズ
+000423 0240 CD7DF3          17      CALL    BDOS
+000426 0243 E1              10      POP HL
+000427 0244 1803            12      JR  READOK
+       0246                     DOS2RELOAD_:
+       0529                         ORG $$+0100H    ;$DEPHASE
 [EOF:DOS.ASM:UTF_8]
