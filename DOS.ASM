@@ -186,7 +186,7 @@ JP_HL:
 TITLE:
 	DB	"DOS$"
 TITLE2:
-	DB	" for MSX v0.14 Gaku$"
+	DB	" for MSX v0.15 Gaku$"
 AUTOEXEC:
 	DB	"AUTOEXEC",0
 N_SHELL:
