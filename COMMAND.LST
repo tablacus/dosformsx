@@ -30,8 +30,8 @@
                                 
 000000 0100                         ORG 0100H
 000000 0100 C31501          10      JP  START
-000003 0103 0D0A434F4D4D414E    VER:    DB  00DH,00AH,"COMMAND v0.15",00DH,00AH,'$'
-            442076302E31350D    
+000003 0103 0D0A434F4D4D414E    VER:    DB  00DH,00AH,"COMMAND v0.16",00DH,00AH,'$'
+            442076302E31360D    
             0A24                
        0115                     START:
 000015 0115 ED7B0600        20      LD  SP,(SYSTEM+1)
@@ -1288,9 +1288,9 @@
        0969                     COPY6:
 000869 0969 CD8C0A          17      CALL    BUFSIZ
 00086C 096C CD9403          17      CALL    S27DTA_D2
-00086F 096F 3C               4      INC A
-000870 0970 CAEA09          10      JP  Z,COPYE
-000873 0973 47               4      LD  B,A
+00086F 096F 47               4      LD  B,A
+000870 0970 3C               4      INC A
+000871 0971 CAEA09          10      JP  Z,COPYE
 000874 0974 7C               4      LD  A,H
 000875 0975 B5               4      OR  L
 000876 0976 280F            12      JR  Z,COPY7
