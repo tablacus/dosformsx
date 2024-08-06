@@ -28,6 +28,18 @@ https://github.com/tablacus/LSX-Dodgers/wiki
 
 LSX-Dodgersのwikiに文字列を表示したり、ファイルを読み出したり、書き込んだり、削除したりするサンプルがあります。
 
+# WebMSX
+
+[WebMSX](https://webmsx.org/)で起動するリンクはこちら
+
+## dosformsx.dsk(MSX1)
+https://webmsx.org/?MACHINE=MSX1J&DISKA=https://github.com/tablacus/dosformsx/raw/master/disk/dosformsx.dsk
+
+## dosformsx.dsk(MSX2)
+https://webmsx.org/?MACHINE=MSX2J&DISKA=https://github.com/tablacus/dosformsx/raw/master/disk/dosformsx.dsk
+
+## dos2formsx.dsk(MSXturboR)
+https://webmsx.org/?MACHINE=MSXTRJ&DISKA=https://github.com/tablacus/dos2formsx/raw/master/disk/dos2formsx.dsk
 
 # 参考文献
 
