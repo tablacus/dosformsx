@@ -20,7 +20,7 @@ https://github.com/tablacus/dosformsx/releases
 
 # 内部コマンド
 
-https://github.com/tablacus/dosformsx/blob/master/COMMAND.TXT
+https://github.com/tablacus/dosformsx/blob/main/COMMAND.TXT
 
 # 基本的なシステムコールの使い方のサンプル
 
@@ -39,7 +39,7 @@ https://webmsx.org/?MACHINE=MSX1J&DISKA=https://github.com/tablacus/dosformsx/ra
 https://webmsx.org/?MACHINE=MSX2J&DISKA=https://github.com/tablacus/dosformsx/raw/main/disk/dosformsx.dsk
 
 ## dos2formsx.dsk(MSXturboR)
-https://webmsx.org/?MACHINE=MSXTRJ&DISKA=https://github.com/tablacus/dos2formsx/raw/main/disk/dos2formsx.dsk
+https://webmsx.org/?MACHINE=MSXTRJ&DISKA=https://github.com/tablacus/dosformsx/raw/main/disk/dos2formsx.dsk
 
 # 参考文献
 
