@@ -144,12 +144,7 @@ DOS1R:
 	ADD	A,040H
 	LD	(V_SHELL),A
 
-	LD	A,(EXBRSA)
-	OR	A
 	LD	A,40
-	JR	Z,MSX1
-	LD	A,80		;MSX2以降は80桁で起動
-MSX1:
 	LD	(LINL40),A
 	LD	IY,(EXPTBL)	;メインROMスロット
 	LD	IX,INITXT
@@ -214,7 +209,7 @@ JP_HL:
 TITLE:
 	DB	"DOS$"
 TITLE2:
-	DB	" for MSX v0.17 Gaku$"
+	DB	" for MSX v0.18 Gaku$"
 AUTOEXEC:
 	DB	"AUTOEXEC",0
 N_SHELL:
