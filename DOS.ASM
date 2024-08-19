@@ -209,7 +209,7 @@ JP_HL:
 TITLE:
 	DB	"DOS$"
 TITLE2:
-	DB	" for MSX v0.18 Gaku$"
+	DB	" for MSX v0.19 Gaku$"
 AUTOEXEC:
 	DB	"AUTOEXEC",0
 N_SHELL:
@@ -287,10 +287,10 @@ NOBD12:
 	JR	Z,SAVE_PATH
 	CP	04CH 		;_HTEST ファイルハンドルの検査
 	JR	Z,SAVE_PATH
-	CP	050H		;_ATTR ファイル属性の獲得・設定
-	JR	Z,SAVE_PATH
-	CP	051H		;_FTIME ファイルの日付および時刻の獲得・設定
-	JR	Z,SAVE_PATH
+	CP	04DH		;_DELETE ファイル、サブディレクトリの削除
+	JR	C,SAVEFCB0
+	CP	051H+1		;_FTIME ファイルの日付および時刻の獲得・設定
+	JR	C,SAVE_PATH
 	CP	059H		;_GETCD カレントディレクトリの獲得
 	JR	C,SAVEFCB0
 	CP	05CH+1		;_PFILE ファイル名の解析+1
@@ -363,7 +363,13 @@ BDOS3IX:
 	XOR	A
 	LD	(SAVE_HL+1),A
 	LD	A,C
-	CP	052H		;_HDELETE ファイルハンドルの削除
+	CP	4EH		;_RENAME ファイルあるいはサブディレクトリ名の変更
+	JR	Z,SAVE_HL1
+	CP	4FH		;_MOVE ファイルあるいはサブディレクトリの移動
+	JR	Z,SAVE_HL1
+	CP	53H		;_HRENAME ファイルハンドルの名前の変更
+	JR	Z,SAVE_HL1
+	CP	54H		;_HMOVE ファイルハンドルの移動
 	JR	Z,SAVE_HL1
 	CP	05CH		;_PFILE ファイル名の解析
 	JR	Z,SAVE_HL1
@@ -384,7 +390,7 @@ SAVE_HL1:
 	LD	(SAVE_HL),HL
 	PUSH	BC
 	PUSH	DE
-	LD	BC,11
+	LD	BC,64
 	LD	DE,ALT_MEM3
 	LDIR
 	POP	DE
