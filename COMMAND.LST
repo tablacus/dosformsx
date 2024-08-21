@@ -32,8 +32,8 @@
 000000 0100                         ORG 0100H
 000000 0100 C31501          10      JP  START
        0103                     VER:
-000003 0103 0D0A434F4D4D414E        DB  00DH,00AH,"COMMAND v0.19",00DH,00AH,'$'
-            442076302E31390D    
+000003 0103 0D0A434F4D4D414E        DB  00DH,00AH,"COMMAND v0.20",00DH,00AH,'$'
+            442076302E32300D    
             0A24                
        0115                     START:
 000015 0115 ED7B0600        20      LD  SP,(SYSTEM+1)

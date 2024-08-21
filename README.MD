@@ -50,3 +50,6 @@ ASCAT編集部「MSXテクニカルガイドブック　第四版＋ディスク
 # ライセンス
 
 [MIT LICENSE](https://github.com/tablacus/dosformsx/blob/main/LICENSE)
+MIT License のオープンソースです。  
+
+※有料、無料にかかわらず同人ソフトに組み込んで配布してもらっても問題ありません。
