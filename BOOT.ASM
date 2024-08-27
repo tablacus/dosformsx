@@ -1,4 +1,4 @@
-;	Ž—”ñDOS BOOT (DOS1)
+;	ä¼¼éžDOS BOOT (DOS1)
 
 	BDOS	EQU	0F37DH
 
@@ -18,27 +18,26 @@
 	DW	3		;BPB_FATSz16
 	DW	9		;BPB_SecPerTrk
 	DW	2		;BPB_NumHeads
-	DW	0		;BPB_HiddSec(2ƒoƒCƒg)
-	JR	START		;ƒu[ƒgƒvƒƒOƒ‰ƒ€‚ÖƒWƒƒƒ“ƒv
-	DB	"_DOS1_"	;MSX-DOS2”»•Ê—p(VOL_ID‚¶‚á‚È‚¯‚ê‚ÎDOS1)
-	DB	0		;ƒ_[ƒeƒBƒfƒBƒXƒNƒtƒ‰ƒO
-	DB	"DOS1"		;ƒ{ƒŠƒ…[ƒ€ID(“K“–‚È4ƒoƒCƒg)
+	DW	0		;BPB_HiddSec(2ãƒã‚¤ãƒˆ)
+	JR	START		;ãƒ–ãƒ¼ãƒˆãƒ—ãƒ­ã‚°ãƒ©ãƒ ã¸ã‚¸ãƒ£ãƒ³ãƒ—
+	DB	"_DOS1_"	;MSX-DOS2åˆ¤åˆ¥ç”¨(VOL_IDã˜ã‚ƒãªã‘ã‚Œã°DOS1)
+	DB	0		;ãƒ€ãƒ¼ãƒ†ã‚£ãƒ‡ã‚£ã‚¹ã‚¯ãƒ•ãƒ©ã‚°
+	DB	"DOS1"		;ãƒœãƒªãƒ¥ãƒ¼ãƒ ID(é©å½“ãª4ãƒã‚¤ãƒˆ)
 	DS	5		;Reserved for future
 ;
-;	ƒu[ƒgƒvƒƒOƒ‰ƒ€
+;	ãƒ–ãƒ¼ãƒˆãƒ—ãƒ­ã‚°ãƒ©ãƒ 
 ;
 START:
 	RET	NC
 
-	EX	DE,HL
-	CALL	JP_HL
+	CALL	0F36BH		;ãƒšãƒ¼ã‚¸1ã‚’ãƒ¡ã‚¤ãƒ³RAMã«åˆ‡ã‚Šæ›¿ãˆã‚‹
 
 	LD	DE,FCB
 	LD	C,00FH
 	CALL	BDOS
 
 	LD	DE,00100H
-	LD	C,01AH		;(BDOS)DTA‚ÌÝ’è
+	LD	C,01AH		;(BDOS)DTAã®è¨­å®š
 	CALL	BDOS
 
 	LD	HL,0
@@ -49,11 +48,9 @@ START:
 
 	LD	DE,FCB
 	LD	HL,0BF00H
-	LD	C,027H		;(BDOS)ƒ‰ƒ“ƒ_ƒ€EƒuƒƒbƒNEƒŠ[ƒh
+	LD	C,027H		;(BDOS)ãƒ©ãƒ³ãƒ€ãƒ ãƒ»ãƒ–ãƒ­ãƒƒã‚¯ãƒ»ãƒªãƒ¼ãƒ‰
 	CALL	BDOS
 
-	JP	0100H
-JP_HL:
-	JP	(HL)
+	JP	00100H
 
 FCB:	DB	0, "DOS     SYS",0,0,0,0

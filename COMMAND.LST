@@ -6,7 +6,7 @@
                                 ;
                                 ;   似非DOS
                                 ;
-       0021                     VER_BCD EQU 00021H
+       0022                     VER_BCD EQU 00022H
                                 
        0005                     SYSTEM  EQU 00005H
        005C                     FCB1    EQU 0005CH
@@ -30,7 +30,7 @@
        F3B0                     LINLEN  EQU 0F3B0H
                                 
        F41F                     KBUF    EQU 0F41FH; 318
-       F55E                     BUF EQU 0F55EH; 258
+                                ;BUF    EQU 0F55EH; 258
                                 
        F662                     DIMFLG  EQU 0F662H
        F663                     VALTYP  EQU 0F663H
@@ -54,7 +54,7 @@
                                 
        8000                     DATA    EQU 08000H
                                 
-000000 0100                         ORG 0100H
+000000 0100                         ORG 00100H
 000000 0100 C31601          10      JP  START
        0103                     TITLE:
 000003 0103 0D0A70736575646F        DB  00DH,00AH,"pseudo COMMAND v$"
@@ -125,7 +125,7 @@
 00008F 018F 0E09             7      LD  C,9
 000091 0191 CD0500          17      CALL    SYSTEM
                                 
-000094 0194 212100          10      LD  HL,VER_BCD
+000094 0194 212200          10      LD  HL,VER_BCD
 000097 0197 7C               4      LD  A,H
 000098 0198 CDDD0A          17      CALL    PRTHX1
 00009B 019B 3E2E             7      LD  A,'.'

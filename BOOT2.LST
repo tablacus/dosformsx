@@ -1,5 +1,5 @@
-                                ;*** AILZ80ASM *** Z-80 Assembler, version 1.0.0.0, LST:Full:4
-                                ;   éóîÒDOS BOOT2 (DOS2)
+Ôªø                                ;*** AILZ80ASM *** Z-80 Assembler, version 1.0.21.0, LST:Full:4
+                                ;   ‰ººÈùûDOS BOOT2 (DOS2)
                                 
        F37D                         BDOS    EQU 0F37DH
                                 
@@ -19,44 +19,41 @@
 000016 C016 0300                    DW  3       ;BPB_FATSz16
 000018 C018 0900                    DW  9       ;BPB_SecPerTrk
 00001A C01A 0200                    DW  2       ;BPB_NumHeads
-00001C C01C 0000                    DW  0       ;BPB_HiddSec(2ÉoÉCÉg)
-00001E C01E 1810            12      JR  START       ;ÉuÅ[ÉgÉvÉçÉOÉâÉÄÇ÷ÉWÉÉÉìÉv
-000020 C020 564F4C5F4944            DB  "VOL_ID"    ;MSX-DOS2îªï óp(VOL_IDÇ»ÇÃÇ≈DOS2)
-000026 C026 00                      DB  0       ;É_Å[ÉeÉBÉfÉBÉXÉNÉtÉâÉO
-000027 C027 444F5332                DB  "DOS2"      ;É{ÉäÉÖÅ[ÉÄID(ìKìñÇ»4ÉoÉCÉg)
+00001C C01C 0000                    DW  0       ;BPB_HiddSec(2„Éê„Ç§„Éà)
+00001E C01E 1810            12      JR  START       ;„Éñ„Éº„Éà„Éó„É≠„Ç∞„É©„É†„Å∏„Ç∏„É£„É≥„Éó
+000020 C020 564F4C5F4944            DB  "VOL_ID"    ;MSX-DOS2Âà§Âà•Áî®(VOL_ID„Å™„ÅÆ„ÅßDOS2)
+000026 C026 00                      DB  0       ;„ÉÄ„Éº„ÉÜ„Ç£„Éá„Ç£„Çπ„ÇØ„Éï„É©„Ç∞
+000027 C027 444F5332                DB  "DOS2"      ;„Éú„É™„É•„Éº„É†ID(ÈÅ©ÂΩì„Å™4„Éê„Ç§„Éà)
 00002B C02B                         DS  5       ;Reserved for future
                                 ;
-                                ;   ÉuÅ[ÉgÉvÉçÉOÉâÉÄ
+                                ;   „Éñ„Éº„Éà„Éó„É≠„Ç∞„É©„É†
                                 ;
        C030                     START:
 000030 C030 D0              11      RET NC
                                 
-000031 C031 EB               4      EX  DE,HL
-000032 C032 CD60C0          17      CALL    JP_HL
+000031 C031 CD6BF3          17      CALL    0F36BH      ;„Éö„Éº„Ç∏1„Çí„É°„Ç§„É≥RAM„Å´Âàá„ÇäÊõø„Åà„Çã
                                 
-000035 C035 1161C0          10      LD  DE,FCB
-000038 C038 0E0F             7      LD  C,00FH
-00003A C03A CD7DF3          17      CALL    BDOS
+000034 C034 115FC0          10      LD  DE,FCB
+000037 C037 0E0F             7      LD  C,00FH
+000039 C039 CD7DF3          17      CALL    BDOS
                                 
-00003D C03D 110001          10      LD  DE,00100H
-000040 C040 0E1A             7      LD  C,01AH      ;(BDOS)DTAÇÃê›íË
-000042 C042 CD7DF3          17      CALL    BDOS
+00003C C03C 110001          10      LD  DE,00100H
+00003F C03F 0E1A             7      LD  C,01AH      ;(BDOS)DTA„ÅÆË®≠ÂÆö
+000041 C041 CD7DF3          17      CALL    BDOS
                                 
-000045 C045 210000          10      LD  HL,0
-000048 C048 2282C0          16      LD  (FCB+33),HL
-00004B C04B 2284C0          16      LD  (FCB+35),HL
-00004E C04E 2C               4      INC L
-00004F C04F 226FC0          16      LD  (FCB+14),HL
+000044 C044 210000          10      LD  HL,0
+000047 C047 2280C0          16      LD  (FCB+33),HL
+00004A C04A 2282C0          16      LD  (FCB+35),HL
+00004D C04D 2C               4      INC L
+00004E C04E 226DC0          16      LD  (FCB+14),HL
                                 
-000052 C052 1161C0          10      LD  DE,FCB
-000055 C055 2100BF          10      LD  HL,0BF00H
-000058 C058 0E27             7      LD  C,027H      ;(BDOS)ÉâÉìÉ_ÉÄÅEÉuÉçÉbÉNÅEÉäÅ[Éh
-00005A C05A CD7DF3          17      CALL    BDOS
+000051 C051 115FC0          10      LD  DE,FCB
+000054 C054 2100BF          10      LD  HL,0BF00H
+000057 C057 0E27             7      LD  C,027H      ;(BDOS)„É©„É≥„ÉÄ„É†„Éª„Éñ„É≠„ÉÉ„ÇØ„Éª„É™„Éº„Éâ
+000059 C059 CD7DF3          17      CALL    BDOS
                                 
-00005D C05D C30001          10      JP  0100H
-       C060                     JP_HL:
-000060 C060 E9               4      JP  (HL)
+00005C C05C C30001          10      JP  00100H
                                 
-000061 C061 00444F5320202020    FCB:    DB  0, "DOS     SYS",0,0,0,0
+00005F C05F 00444F5320202020    FCB:    DB  0, "DOS     SYS",0,0,0,0
             2053595300000000    
-[EOF:BOOT2.ASM:SHIFT_JIS]
+[EOF:BOOT2.ASM:UTF_8]
