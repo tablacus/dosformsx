@@ -1,7 +1,9 @@
 ﻿                                ;*** AILZ80ASM *** Z-80 Assembler, version 1.0.21.0, LST:Full:4
                                 ;   似非DOS BOOT2 (DOS2)
                                 
-       F37D                         BDOS    EQU 0F37DH
+       F37D                     BDOS    EQU 0F37DH
+       F368                     ROMUSE  EQU 0F368H
+       F36B                     RAMUSE  EQU 0F36BH
                                 
 000000 C000                         ORG 0C000H
                                 ;
@@ -31,29 +33,33 @@
        C030                     START:
 000030 C030 D0              11      RET NC
                                 
-000031 C031 CD6BF3          17      CALL    0F36BH      ;ページ1をメインRAMに切り替える
+000031 C031 1166C0          10      LD  DE,FCB
+000034 C034 0E0F             7      LD  C,00FH
+000036 C036 CD7DF3          17      CALL    BDOS
+000039 C039 3C               4      INC A
+00003A C03A C8              11      RET Z
                                 
-000034 C034 115FC0          10      LD  DE,FCB
-000037 C037 0E0F             7      LD  C,00FH
-000039 C039 CD7DF3          17      CALL    BDOS
+00003B C03B 210000          10      LD  HL,0
+00003E C03E 2287C0          16      LD  (FCB+33),HL
+000041 C041 2289C0          16      LD  (FCB+35),HL
+000044 C044 2C               4      INC L
+000045 C045 2274C0          16      LD  (FCB+14),HL
                                 
-00003C C03C 110001          10      LD  DE,00100H
-00003F C03F 0E1A             7      LD  C,01AH      ;(BDOS)DTAの設定
-000041 C041 CD7DF3          17      CALL    BDOS
+000048 C048 110001          10      LD  DE,00100H
+00004B C04B 0E1A             7      LD  C,01AH      ;(BDOS)DTAの設定
+00004D C04D CD7DF3          17      CALL    BDOS
                                 
-000044 C044 210000          10      LD  HL,0
-000047 C047 2280C0          16      LD  (FCB+33),HL
-00004A C04A 2282C0          16      LD  (FCB+35),HL
-00004D C04D 2C               4      INC L
-00004E C04E 226DC0          16      LD  (FCB+14),HL
+000050 C050 CD6BF3          17      CALL    RAMUSE      ;ページ1をメインRAMに切り替える
                                 
-000051 C051 115FC0          10      LD  DE,FCB
-000054 C054 2100BF          10      LD  HL,0BF00H
-000057 C057 0E27             7      LD  C,027H      ;(BDOS)ランダム・ブロック・リード
-000059 C059 CD7DF3          17      CALL    BDOS
+000053 C053 1166C0          10      LD  DE,FCB
+000056 C056 2100BF          10      LD  HL,0BF00H
+000059 C059 0E27             7      LD  C,027H      ;(BDOS)ランダム・ブロック・リード
+00005B C05B CD7DF3          17      CALL    BDOS
+00005E C05E FE01             7      CP  1
+000060 C060 CA0001          10      JP  Z,00100H
                                 
-00005C C05C C30001          10      JP  00100H
+000063 C063 C368F3          10      JP  ROMUSE      ;ページ1をメインROMに切り替える
                                 
-00005F C05F 00444F5320202020    FCB:    DB  0, "DOS     SYS",0,0,0,0
+000066 C066 00444F5320202020    FCB:    DB  0, "DOS     SYS",0,0,0,0
             2053595300000000    
 [EOF:BOOT2.ASM:UTF_8]
