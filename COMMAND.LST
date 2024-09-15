@@ -6,7 +6,7 @@
                                 ;
                                 ;   似非DOS
                                 ;
-       0024                     VER_BCD EQU 00024H
+       0025                     VER_BCD EQU 00025H
                                 
        0005                     SYSTEM  EQU 00005H
        005C                     FCB1    EQU 0005CH
@@ -130,7 +130,7 @@
 00009C 019C 0E09             7      LD  C,9
 00009E 019E CD0500          17      CALL    SYSTEM
                                 
-0000A1 01A1 212400          10      LD  HL,VER_BCD
+0000A1 01A1 212500          10      LD  HL,VER_BCD
 0000A4 01A4 7C               4      LD  A,H
 0000A5 01A5 CDE30A          17      CALL    PRTHX1
 0000A8 01A8 3E2E             7      LD  A,'.'
