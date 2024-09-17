@@ -8,9 +8,11 @@
 
 DOS2カーネルを持っているマシンで`dos2formsx.dsk`を使うとMSX-DOS2互換になります。
 
+※また、DOS2カーネル使用時は`EXTBIO`が有効になっているのでマッパーRAMが使用可能です。
+
 コマンドシェルの似非COMMANDはMSX-DOS互換OSの[LSX-Dodgers](https://github.com/tablacus/LSX-Dodgers)をベースにして作成しました。
 
-起動時にはAUTOEXECというコマンドを実行します。「AUTOEXEC.COM」や「AUTOEXEC.BAT」があればそのまま実行します。
+起動時にはAUTOEXECというコマンドを実行します。`AUTOEXEC.COM`や`AUTOEXEC.BAT`があればそのまま実行します。
 
 # エミュレータ用イメージファイル
 

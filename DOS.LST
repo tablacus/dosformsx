@@ -5,7 +5,7 @@
                                 ;
                                 ;   似非DOS
                                 ;
-       0025                     VER_BCD EQU 00025H
+       0026                     VER_BCD EQU 00026H
                                 
        0005                     SYSTEM  EQU 00005H
        005C                     FCB1    EQU 0005CH
@@ -45,6 +45,7 @@
        FAF8                     EXBRSA  EQU 0FAF8H
                                 
        FC9B                     INTFLG  EQU 0FC9BH
+       FCA9                     CSRSW   EQU 0FCA9H
        FCC1                     EXPTBL  EQU 0FCC1H
        FFCA                     EXTBIOS EQU 0FFCAH
 [EOF:DEF.ASM:UTF_8]
@@ -336,7 +337,7 @@
 0001D7 02D7 0E09             7      LD  C,9
 0001D9 02D9 CD7DF3          17      CALL    BDOS
                                 
-0001DC 02DC 212500          10      LD  HL,VER_BCD
+0001DC 02DC 212600          10      LD  HL,VER_BCD
 0001DF 02DF 7C               4      LD  A,H
 0001E0 02E0 CD1003          17      CALL    PRTHX1
 0001E3 02E3 3E2E             7      LD  A,'.'
@@ -690,7 +691,7 @@
 000497 01B1 DD25            10      DEC IXH     ;NEXTOR判別
 000499 01B3 2807            12      JR  Z,NEXTOR
 00049B 01B5 DD21EDEC        14      LD  IX,0ECEDH   ;似非DOS判別用(INC IXがあるのでIXが0EDEDHになる)
-00049F 01B9 212500          10      LD  HL,VER_BCD  ;NEXTORじゃない場合はHLに似非DOSのバージョンが返る
+00049F 01B9 212600          10      LD  HL,VER_BCD  ;NEXTORじゃない場合はHLに似非DOSのバージョンが返る
        01BC                     NEXTOR:
 0004A2 01BC DD24            10      INC IXH
        01BE                     BDOS7:
