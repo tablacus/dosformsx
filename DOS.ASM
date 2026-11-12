@@ -795,7 +795,9 @@ AT_COMMAND1:
 	DB	0,"COMMAND COM",0,0,0,0
 
 AT:
-	DS	0300H-37-AT
+	DS	0300H-38-AT
+PROCESS:
+	DB	0
 FCB_BAT:
 	DS	37			;バッチファイル用のFCB
 ;			下位1バイト0になるように

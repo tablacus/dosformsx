@@ -1,11 +1,11 @@
-﻿                                ;*** AILZ80ASM *** Z-80 Assembler, version 1.0.21.0, LST:Full:4
+﻿                                ;*** AILZ80ASM *** Z-80 Assembler, version 1.0.31.0, LST:Full:4
                                 ;   似非DOS
                                 
                                     INCLUDE "DEF.ASM"
                                 ;
                                 ;   似非DOS
                                 ;
-       0026                     VER_BCD EQU 00026H
+       0027                     VER_BCD EQU 00027H
                                 
        0005                     SYSTEM  EQU 00005H
        005C                     FCB1    EQU 0005CH
@@ -337,7 +337,7 @@
 0001D7 02D7 0E09             7      LD  C,9
 0001D9 02D9 CD7DF3          17      CALL    BDOS
                                 
-0001DC 02DC 212600          10      LD  HL,VER_BCD
+0001DC 02DC 212700          10      LD  HL,VER_BCD
 0001DF 02DF 7C               4      LD  A,H
 0001E0 02E0 CD1003          17      CALL    PRTHX1
 0001E3 02E3 3E2E             7      LD  A,'.'
@@ -691,7 +691,7 @@
 000497 01B1 DD25            10      DEC IXH     ;NEXTOR判別
 000499 01B3 2807            12      JR  Z,NEXTOR
 00049B 01B5 DD21EDEC        14      LD  IX,0ECEDH   ;似非DOS判別用(INC IXがあるのでIXが0EDEDHになる)
-00049F 01B9 212600          10      LD  HL,VER_BCD  ;NEXTORじゃない場合はHLに似非DOSのバージョンが返る
+00049F 01B9 212700          10      LD  HL,VER_BCD  ;NEXTORじゃない場合はHLに似非DOSのバージョンが返る
        01BC                     NEXTOR:
 0004A2 01BC DD24            10      INC IXH
        01BE                     BDOS7:
@@ -853,7 +853,9 @@
             20434F4D00000000    
                                 
        02AE                     AT:
-000594 02AE                         DS  0300H-37-AT
+000594 02AE                         DS  0300H-38-AT
+       02DA                     PROCESS:
+0005C0 02DA 00                      DB  0
        02DB                     FCB_BAT:
 0005C1 02DB                         DS  37          ;バッチファイル用のFCB
                                 ;           下位1バイト0になるように
